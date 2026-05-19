@@ -94,7 +94,7 @@ const ExternalQualityAssurance = () => {
                 {/* Icon Circle Background */}
                 <div className="flex h-24 w-24 items-center justify-center rounded-full bg-cyan-50 p-2 transition-transform duration-500 group-hover:scale-110 dark:bg-zinc-800">
                   <Image
-                    src="/images/logo/ITALogo1.webp"
+                    src="/images/ITALogo1.webp"
                     className="h-full w-full object-contain"
                     alt="Logo ITA"
                     width={48}
