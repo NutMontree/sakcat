@@ -164,10 +164,14 @@ export async function POST(req: Request) {
       },
       { status: 201 },
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Register Error:", error);
     return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ ไม่สามารถลงทะเบียนได้ในขณะนี้" },
+      { 
+        error: "เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ ไม่สามารถลงทะเบียนได้ในขณะนี้",
+        details: error.message,
+        stack: error.stack
+      },
       { status: 500 },
     );
   }
