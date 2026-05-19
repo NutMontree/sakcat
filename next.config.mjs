@@ -15,13 +15,13 @@ const nextConfig = {
       {
         source: "/:path*",
         has: [{ type: "host", value: "sakcat.vercel.app" }],
-        destination: "https://sakcatvercel.app/:path*",
+        destination: "https://sakcat.vercel.app/:path*",
         permanent: true,
       },
       {
         source: "/:path*",
         has: [{ type: "host", value: "sakcat.site" }],
-        destination: "https://sakcatvercel.app/:path*",
+        destination: "https://sakcat.vercel.app/:path*",
         permanent: true,
       },
     ];
@@ -55,7 +55,7 @@ const nextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: "500mb",
-      allowedOrigins: ["sakcatvercel.app", "sakcat.site", "localhost:3000"],
+      allowedOrigins: ["sakcat.vercel.app", "sakcat.site", "localhost:3000"],
     },
   },
   outputFileTracingExcludes: {
