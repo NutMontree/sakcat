@@ -47,10 +47,12 @@ export default function LoginPage() {
         });
 
         let errorMessage = "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
-        if (result.error.toLowerCase().includes("ยังรอการอนุมัติ")) {
+        if (result.error.toLowerCase().includes("ยังรอการอนุมัติ") || result.error.includes("อนุมัติ")) {
           errorMessage = "บัญชีของคุณยังรอการอนุมัติจาก Super Admin";
-        } else if (result.error.toLowerCase().includes("ไม่พบผู้ใช้งาน")) {
+        } else if (result.error.toLowerCase().includes("ไม่พบผู้ใช้งาน") || result.error.includes("ไม่พบชื่อผู้ใช้")) {
           errorMessage = "ไม่พบชื่อผู้ใช้นี้ในระบบ";
+        } else if (result.error.toLowerCase().includes("ระงับ") || result.error.includes("disabled") || result.error.toLowerCase().includes("active")) {
+          errorMessage = "บัญชีของคุณถูกระงับการใช้งาน หรือยังไม่ได้รับการอนุมัติจากผู้ดูแลระบบ";
         }
 
         setError(errorMessage);

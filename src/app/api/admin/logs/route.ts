@@ -82,7 +82,13 @@ export async function POST(req: Request) {
       stack: error.stack,
       cause: error.cause
     });
-    return NextResponse.json({ error: "Internal Server Error during logging" }, { status: 500 });
+    // Return a graceful 200 response with error details so it doesn't break client-side flows
+    return NextResponse.json({
+      success: false,
+      error: "Logging failed, handled gracefully",
+      details: error.message,
+      stack: error.stack
+    }, { status: 200 });
   }
 }
 
