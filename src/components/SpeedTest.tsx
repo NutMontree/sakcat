@@ -458,7 +458,7 @@ export default function SpeedTest() {
             </h3>
             <p className="text-gray-600">
               เรียกใช้งานผ่าน Web Browser โดยไปที่
-              <span className="text-[#83697b] font-bold underline">sakcat.ac.th/speedtest</span>
+              <span className="text-[#83697b] font-bold underline">sakcatvercel.app/speedtest</span>
               หรือใช้งานผ่านช่องทางบริการของวิทยาลัย
             </p>
           </div>

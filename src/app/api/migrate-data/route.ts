@@ -4,14 +4,14 @@ import bcrypt from "bcryptjs";
 import fs from "fs";
 import path from "path";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 function extractDataFromText(content: string) {
   try {
     // Basic regex extraction since it's just a JS variable
     const match = content.match(/export const Data = (\[[\s\S]*?\]);/);
     if (!match) return [];
-    
+
     // Evaluate the array string safely-ish
     // Since this is trusted local code, we can use a Function constructor
     // to parse the JS object literal which JSON.parse can't handle because of backticks and unquoted keys
@@ -29,9 +29,11 @@ export async function GET(req: Request) {
     const client = await clientPromise;
     const db = client.db("sakcat_db");
     const usersCollection = db.collection("users");
-    
+
     const websiteDir = path.join(process.cwd(), "src", "app", "(website)");
-    const departments = fs.readdirSync(websiteDir).filter(f => fs.statSync(path.join(websiteDir, f)).isDirectory());
+    const departments = fs
+      .readdirSync(websiteDir)
+      .filter((f) => fs.statSync(path.join(websiteDir, f)).isDirectory());
 
     let totalMigrated = 0;
     const results = [];
@@ -46,7 +48,7 @@ export async function GET(req: Request) {
 
       for (const person of personnelList) {
         if (!person.name) continue;
-        
+
         const cleanName = person.name.trim();
 
         const existingUser = await usersCollection.findOne({ name: cleanName });
@@ -58,14 +60,14 @@ export async function GET(req: Request) {
             faction: person.faction?.trim(),
             description: person.description?.trim(),
             isActive: true,
-          }
+          },
         };
 
         // Only update image if the user doesn't already have a valid cloudinary image
-        if (!existingUser?.image || !existingUser.image.includes('cloudinary')) {
-             if(person.img && person.img.trim() !== '') {
-                 updateDoc.$set.image = person.img.trim();
-             }
+        if (!existingUser?.image || !existingUser.image.includes("cloudinary")) {
+          if (person.img && person.img.trim() !== "") {
+            updateDoc.$set.image = person.img.trim();
+          }
         }
 
         if (existingUser) {
@@ -73,17 +75,17 @@ export async function GET(req: Request) {
           results.push(`Updated existing: ${cleanName}`);
         } else {
           // Generate a fake email to satisfy unique constraint
-          const fakeEmail = `fake_${Date.now()}_${Math.random().toString(36).substring(7)}@sakcat.ac.th`;
+          const fakeEmail = `fake_${Date.now()}_${Math.random().toString(36).substring(7)}@sakcatvercel.app`;
           // Insert new user
           await usersCollection.insertOne({
             name: cleanName,
             email: fakeEmail,
             username: `user_${Date.now()}_${Math.random().toString(36).substring(7)}`,
             password: defaultPassword,
-            role: "teacher", 
+            role: "teacher",
             ...updateDoc.$set,
             createdAt: new Date(),
-            updatedAt: new Date()
+            updatedAt: new Date(),
           });
           results.push(`Inserted NEW: ${cleanName}`);
         }
@@ -96,7 +98,7 @@ export async function GET(req: Request) {
     console.error("Migration failed:", error);
     return NextResponse.json(
       { error: "Migration failed", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

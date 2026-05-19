@@ -3,16 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import type { QRCodeProps } from "antd";
-import {
-  Input,
-  QRCode,
-  Button,
-  Segmented,
-  ConfigProvider,
-  theme,
-  notification,
-  Spin,
-} from "antd";
+import { Input, QRCode, Button, Segmented, ConfigProvider, theme, notification, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 
 // --- Icons ---
@@ -71,9 +62,7 @@ const downloadStylizedQRCode = (
   text: string,
   displayTitle: string, // รับชื่อ Title มาแสดง
 ) => {
-  const canvas = document
-    .getElementById("myqrcode")
-    ?.querySelector<HTMLCanvasElement>("canvas");
+  const canvas = document.getElementById("myqrcode")?.querySelector<HTMLCanvasElement>("canvas");
 
   if (!canvas) return;
 
@@ -149,10 +138,8 @@ const downloadStylizedQRCode = (
   ctx.fillStyle = "#6B7280";
   ctx.font = "16px sans-serif";
   let finalDisplay =
-    displayTitle.length > 35
-      ? displayTitle.substring(0, 35) + "..."
-      : displayTitle;
-  if (!finalDisplay) finalDisplay = "https://sakcat.ac.th";
+    displayTitle.length > 35 ? displayTitle.substring(0, 35) + "..." : displayTitle;
+  if (!finalDisplay) finalDisplay = "https://sakcatvercel.app";
   ctx.fillText(finalDisplay, width / 2, height - 25);
 
   // 5. Download
@@ -161,9 +148,7 @@ const downloadStylizedQRCode = (
     .replace(/[^a-zA-Z0-9ก-๙\s-]/g, "")
     .trim()
     .substring(0, 30);
-  const finalFileName = safeFileName
-    ? `${safeFileName}.png`
-    : "SAKCAT-QRCode.png";
+  const finalFileName = safeFileName ? `${safeFileName}.png` : "SAKCAT-QRCode.png";
 
   const url = finalCanvas.toDataURL("image/png");
   const a = document.createElement("a");
@@ -195,9 +180,7 @@ export default function CreateQRCode() {
     const delayDebounceFn = setTimeout(async () => {
       setIsFetchingTitle(true);
       try {
-        const response = await fetch(
-          `/api/get-title?url=${encodeURIComponent(text)}`,
-        );
+        const response = await fetch(`/api/get-title?url=${encodeURIComponent(text)}`);
         const data = await response.json();
         if (data.title) {
           setLinkTitle(data.title);
@@ -228,9 +211,7 @@ export default function CreateQRCode() {
     if (renderType === "canvas") {
       downloadStylizedQRCode(text, linkTitle || text); // ส่ง Link Title ไปให้วาดรูปลง Canvas
     } else {
-      const svg = document
-        .getElementById("myqrcode")
-        ?.querySelector<SVGElement>("svg");
+      const svg = document.getElementById("myqrcode")?.querySelector<SVGElement>("svg");
       if (svg) {
         const svgData = new XMLSerializer().serializeToString(svg);
         const blob = new Blob([svgData], {
@@ -321,16 +302,10 @@ export default function CreateQRCode() {
                 <div className="text-sm px-2 flex items-center gap-2">
                   {isFetchingTitle ? (
                     <span className="text-blue-500 flex items-center gap-2">
-                      <Spin
-                        indicator={
-                          <LoadingOutlined style={{ fontSize: 14 }} spin />
-                        }
-                      />{" "}
+                      <Spin indicator={<LoadingOutlined style={{ fontSize: 14 }} spin />} />{" "}
                       กำลังดึงชื่อลิงก์...
                     </span>
-                  ) : linkTitle &&
-                    text.startsWith("http") &&
-                    linkTitle !== text ? (
+                  ) : linkTitle && text.startsWith("http") && linkTitle !== text ? (
                     <span className="text-green-600 dark:text-green-400">
                       ✅ ชื่อเว็บ: {linkTitle}
                     </span>
@@ -383,7 +358,7 @@ export default function CreateQRCode() {
 
                     <QRCode
                       type={renderType}
-                      value={text || "https://sakcat.ac.th"}
+                      value={text || "https://sakcatvercel.app"}
                       size={240}
                       iconSize={60}
                       color="#000"
@@ -401,7 +376,7 @@ export default function CreateQRCode() {
                       {/* แสดง Title แทน Text ถ้ายาวไปก็จุดๆๆ */}
                       {isFetchingTitle
                         ? "ดึงข้อมูล..."
-                        : linkTitle || text || "https://sakcat.ac.th"}
+                        : linkTitle || text || "https://sakcatvercel.app"}
                     </p>
                   </div>
                 </div>

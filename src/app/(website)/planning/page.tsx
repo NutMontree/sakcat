@@ -42,7 +42,7 @@ const planningJobs = [
     //   },
     //   {
     //     label: "แบบฟอร์ม PDCA",
-    //     href: "https://sakcat.ac.th/pdca",
+    //     href: "https://sakcatvercel.app/pdca",
     //     icon: <FileTextOutlined />,
     //   },
     //   {
@@ -130,9 +130,7 @@ export default function PlanNing() {
                 subtitle={job.subtitle}
                 title={job.title}
               >
-                <div className="animate-in fade-in zoom-in duration-300">
-                  {job.component}
-                </div>
+                <div className="animate-in fade-in zoom-in duration-300">{job.component}</div>
               </AccordionItem>
             ))}
           </Accordion>

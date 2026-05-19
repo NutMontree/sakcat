@@ -29,7 +29,7 @@ export function FootTitle() {
         >
           <p> เพจ Facebook : วิทยาลัยเกษตรและเทคโนโลยีศรีสะเกษ</p>
         </Link>
-        <Link className="hover:text-sky-600" href={"https://www.facebook.com/ktl.ac.th"}>
+        <Link className="hover:text-sky-600" href={"https://www.facebook.com/ktlvercel.app"}>
           <p> เพจ Facebook : วิทยาลัยเกษตรและเทคโนโลยีศรีสะเกษ Today </p>
         </Link>
         <Link
@@ -38,8 +38,8 @@ export function FootTitle() {
         >
           <p>Youtube : วิทยาลัยเกษตรและเทคโนโลยีศรีสะเกษ Today </p>
         </Link>
-        <Link className="hover:text-sky-600" href={"https://sakcat.ac.th"}>
-          <p>Website : https://sakcat.ac.th</p>
+        <Link className="hover:text-sky-600" href={"https://sakcatvercel.app"}>
+          <p>Website : https://sakcatvercel.app</p>
         </Link>
         <Link className="hover:text-sky-600" href={"mailto:relationktl@gmail.com"}>
           <p className="pb-3">Gmail : relationktl@gmail.com</p>

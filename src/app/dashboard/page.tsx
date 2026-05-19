@@ -634,12 +634,12 @@ export default function DashboardLoader() {
                         <p>
                           • Prod:{" "}
                           <a
-                            href="https://sakcat.ac.th/api/drive/folders?reset=true"
+                            href="https://sakcatvercel.app/api/drive/folders?reset=true"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-500 hover:underline"
                           >
-                            https://sakcat.ac.th/api/drive/folders?reset=true
+                            https://sakcatvercel.app/api/drive/folders?reset=true
                           </a>
                         </p>
                       </div>

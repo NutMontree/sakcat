@@ -10,7 +10,7 @@ const facebookPages = [
   "https://www.facebook.com/profile.php?id=100088379594921",
   "https://www.facebook.com/profile.php?id=61567041267941",
   "https://www.facebook.com/profile.php?id=100065239134417",
-  "https://www.facebook.com/sakcat.ac.th.en",
+  "https://www.facebook.com/sakcatvercel.app.en",
   "https://www.facebook.com/profile.php?id=100068997166818",
   "https://www.facebook.com/profile.php?id=100057195379923&mibextid=ZbWKwL",
   "https://www.facebook.com/profile.php?id=100063483313526",
@@ -73,9 +73,7 @@ export default function ShowFacebook() {
                       <span className="text-lg font-bold text-slate-700 dark:text-slate-200">
                         รวมเพจหน่วยงาน
                       </span>
-                      <span className="text-xs text-slate-400">
-                        คลิกเพื่อดู/ซ่อน กระดานข่าว
-                      </span>
+                      <span className="text-xs text-slate-400">คลิกเพื่อดู/ซ่อน กระดานข่าว</span>
                     </div>
                   </div>
                 }
@@ -89,13 +87,11 @@ export default function ShowFacebook() {
                         initial={{ opacity: 0, scale: 0.9 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         transition={{ delay: index * 0.1 }}
-                        className="group relative flex h-[500px] w-full max-w-[340px] flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all hover:shadow-xl dark:bg-neutral-800"
+                        className="group relative flex h-125 w-full max-w-[340px] flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all hover:shadow-xl dark:bg-neutral-800"
                       >
                         {/* Loading Skeleton / Background */}
                         <div className="absolute inset-0 flex animate-pulse items-center justify-center bg-slate-100 dark:bg-neutral-800">
-                          <span className="text-slate-300">
-                            Loading Feed...
-                          </span>
+                          <span className="text-slate-300">Loading Feed...</span>
                         </div>
 
                         {/* Iframe */}

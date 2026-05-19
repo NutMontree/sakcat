@@ -23,9 +23,9 @@ export default function page() {
           </LinkPreview>
         </div>
         <div className="hover:text-blue-500 dark:hover:text-blue-400">
-          <LinkPreview url="https://sakcat.ac.th/">
+          <LinkPreview url="https://sakcatvercel.app/">
             <p className="text-3 md:text-3.5 hover:text-orange-500 sm:text-sm md:text-base dark:hover:text-orange-400">
-              02. sakcat.ac.th
+              02. sakcatvercel.app
             </p>
           </LinkPreview>
         </div>

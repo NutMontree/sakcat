@@ -158,7 +158,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const news = await getNewsDetail(id);
   const baseUrl =
-    process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BASE_URL || "https://sakcat.ac.th";
+    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    "https://sakcatvercel.app";
   const pageUrl = `${baseUrl}/news/${id}`;
   const plainTextContent = news?.content?.replace(/<[^>]+>/g, "").trim() || "";
   const description =
@@ -278,7 +280,9 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
     news.userName || news.author?.name || "เธ‡เธฒเธ™เธจเธนเธ™เธขเนŒเธ‚เน‰เธญเธกเธนเธฅ";
   const authorImage = news.userImage || news.author?.image || null;
   const baseUrl =
-    process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BASE_URL || "https://sakcat.ac.th";
+    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    "https://sakcatvercel.app";
   const pageUrl = `${baseUrl}/news/${id}`;
 
   return (
