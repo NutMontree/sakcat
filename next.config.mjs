@@ -14,7 +14,13 @@ const nextConfig = {
     return [
       {
         source: "/:path*",
-        has: [{ type: "host", value: "sakcat.vercel.app" }],
+        has: [{ type: "host", value: "www.sakcat.vercel.app" }],
+        destination: "https://sakcat.vercel.app/:path*",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.sakcat.site" }],
         destination: "https://sakcat.vercel.app/:path*",
         permanent: true,
       },

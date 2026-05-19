@@ -54,6 +54,13 @@ export async function GET(req: Request, { params }: { params: Promise<{ path: st
               png: "image/png",
               gif: "image/gif",
               webp: "image/webp",
+              svg: "image/svg+xml",
+              pdf: "application/pdf",
+              blob: "image/jpeg",
+              mp4: "video/mp4",
+              webm: "video/webm",
+              mov: "video/quicktime",
+              m4v: "video/x-m4v",
             };
 
             return new NextResponse(buffer, {

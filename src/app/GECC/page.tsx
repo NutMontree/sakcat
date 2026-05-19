@@ -618,13 +618,15 @@ export default function GECCPage() {
                 <YoutubeOutlined className="mr-2 text-xl text-red-600" />
                 วิดีโอแนะนำศูนย์
               </CardHeader>
-              <CardBody className="bg-black p-0">
-                <iframe
-                  className="h-[220px] w-full"
-                  src="/images/gecc/ศูนย์ราชการสะดวก.mp4"
-                  title="Video GECC"
-                  allowFullScreen
-                />
+              <CardBody className="bg-black p-0 overflow-hidden rounded-b-2xl">
+                <video
+                  className="h-[220px] w-full object-cover"
+                  controls
+                  preload="metadata"
+                >
+                  <source src="/images/gecc/ศูนย์ราชการสะดวก.mp4" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
               </CardBody>
             </Card>
             <Card className="border border-slate-200 shadow-md">
