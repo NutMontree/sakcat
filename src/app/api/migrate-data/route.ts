@@ -75,7 +75,7 @@ export async function GET(req: Request) {
           results.push(`Updated existing: ${cleanName}`);
         } else {
           // Generate a fake email to satisfy unique constraint
-          const fakeEmail = `fake_${Date.now()}_${Math.random().toString(36).substring(7)}@sakcatvercel.app`;
+          const fakeEmail = `fake_${Date.now()}_${Math.random().toString(36).substring(7)}@sakcat.vercel.app`;
           // Insert new user
           await usersCollection.insertOne({
             name: cleanName,

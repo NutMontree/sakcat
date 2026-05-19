@@ -38,7 +38,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ path: st
       // 4. Fallback สำหรับเครื่อง Local (Dev): ถ้าหาไฟล์ไม่เจอ ให้ลองดึงจาก Server จริง (Production) มาแสดง
       if (process.env.NODE_ENV === "development") {
         try {
-          const prodUrl = `https://sakcatvercel.app/api/media/${pathSegments.join("/")}`;
+          const prodUrl = `https://sakcat.vercel.app/api/media/${pathSegments.join("/")}`;
           const prodRes = await fetch(prodUrl);
 
           if (prodRes.ok) {

@@ -160,7 +160,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const baseUrl =
     process.env.NEXT_PUBLIC_API_URL ||
     process.env.NEXT_PUBLIC_BASE_URL ||
-    "https://sakcatvercel.app";
+    "https://sakcat.vercel.app";
   const pageUrl = `${baseUrl}/news/${id}`;
   const plainTextContent = news?.content?.replace(/<[^>]+>/g, "").trim() || "";
   const description =
@@ -282,7 +282,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
   const baseUrl =
     process.env.NEXT_PUBLIC_API_URL ||
     process.env.NEXT_PUBLIC_BASE_URL ||
-    "https://sakcatvercel.app";
+    "https://sakcat.vercel.app";
   const pageUrl = `${baseUrl}/news/${id}`;
 
   return (

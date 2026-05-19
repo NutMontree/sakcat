@@ -11,7 +11,7 @@ var facebookPages = [
   "https://www.facebook.com/profile.php?id=100088379594921",
   "https://www.facebook.com/profile.php?id=61567041267941",
   "https://www.facebook.com/profile.php?id=100065239134417",
-  "https://www.facebook.com/sakcatvercel.app.en",
+  "https://www.facebook.com/sakcat.vercel.app.en",
   "https://www.facebook.com/profile.php?id=100068997166818",
   "https://www.facebook.com/profile.php?id=100057195379923&mibextid=ZbWKwL",
   "https://www.facebook.com/profile.php?id=100063483313526",

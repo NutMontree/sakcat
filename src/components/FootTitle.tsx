@@ -38,8 +38,8 @@ export function FootTitle() {
         >
           <p>Youtube : วิทยาลัยเกษตรและเทคโนโลยีศรีสะเกษ Today </p>
         </Link>
-        <Link className="hover:text-sky-600" href={"https://sakcatvercel.app"}>
-          <p>Website : https://sakcatvercel.app</p>
+        <Link className="hover:text-sky-600" href={"https://sakcat.vercel.app"}>
+          <p>Website : https://sakcat.vercel.app</p>
         </Link>
         <Link className="hover:text-sky-600" href={"mailto:relationktl@gmail.com"}>
           <p className="pb-3">Gmail : relationktl@gmail.com</p>

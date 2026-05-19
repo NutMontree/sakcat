@@ -42,7 +42,7 @@ const planningJobs = [
     //   },
     //   {
     //     label: "แบบฟอร์ม PDCA",
-    //     href: "https://sakcatvercel.app/pdca",
+    //     href: "https://sakcat.vercel.app/pdca",
     //     icon: <FileTextOutlined />,
     //   },
     //   {

@@ -41,7 +41,7 @@ const prompt = Prompt({
 
 // 2. กำหนด Metadata สำหรับ SEO และการแชร์ลง Social Media (Open Graph)
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sakcatvercel.app"),
+  metadataBase: new URL("https://sakcat.vercel.app"),
   title: "SAKCAT - วิทยาลัยเกษตรและเทคโนโลยีศรีสะเกษ", // ชื่อที่จะขึ้นบน Tab Browser
   description: "ระบบบริหารจัดการข่าวสารและข้อมูลวิทยาลัย", // คำอธิบายเว็บสำหรับ Search Engine
 
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "วิทยาลัยเกษตรและเทคโนโลยีศรีสะเกษ | SAKCAT",
     description: "ระบบบริหารจัดการข่าวสารและข้อมูลวิทยาลัยเกษตรและเทคโนโลยีศรีสะเกษ",
-    url: "https://sakcatvercel.app", // ลิงก์เว็บไซต์จริง
+    url: "https://sakcat.vercel.app", // ลิงก์เว็บไซต์จริง
     siteName: "SAKCAT",
     images: [
       {

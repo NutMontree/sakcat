@@ -139,7 +139,7 @@ const downloadStylizedQRCode = (
   ctx.font = "16px sans-serif";
   let finalDisplay =
     displayTitle.length > 35 ? displayTitle.substring(0, 35) + "..." : displayTitle;
-  if (!finalDisplay) finalDisplay = "https://sakcatvercel.app";
+  if (!finalDisplay) finalDisplay = "https://sakcat.vercel.app";
   ctx.fillText(finalDisplay, width / 2, height - 25);
 
   // 5. Download
@@ -358,7 +358,7 @@ export default function CreateQRCode() {
 
                     <QRCode
                       type={renderType}
-                      value={text || "https://sakcatvercel.app"}
+                      value={text || "https://sakcat.vercel.app"}
                       size={240}
                       iconSize={60}
                       color="#000"
@@ -376,7 +376,7 @@ export default function CreateQRCode() {
                       {/* แสดง Title แทน Text ถ้ายาวไปก็จุดๆๆ */}
                       {isFetchingTitle
                         ? "ดึงข้อมูล..."
-                        : linkTitle || text || "https://sakcatvercel.app"}
+                        : linkTitle || text || "https://sakcat.vercel.app"}
                     </p>
                   </div>
                 </div>
