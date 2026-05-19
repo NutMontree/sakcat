@@ -1,0 +1,126 @@
+import withPWAInit from "@ducanh2912/next-pwa";
+import path from "path";
+
+const withPWA = withPWAInit({
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+  register: true,
+  skipWaiting: true,
+});
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "sakcat.vercel.app" }],
+        destination: "https://sakcat.ac.th/:path*",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "sakcat.site" }],
+        destination: "https://sakcat.ac.th/:path*",
+        permanent: true,
+      },
+    ];
+  },
+
+  async rewrites() {
+    return [
+      {
+        source: "/uploads/:path*",
+        destination: "/api/media/uploads/:path*",
+      },
+      {
+        source: "/attendance_photos/:path*",
+        destination: "/api/media/attendance_photos/:path*",
+      },
+      {
+        source: "/images/:path*",
+        destination: "/api/media/images/:path*",
+      },
+      {
+        source: "/pdf/:path*",
+        destination: "/api/media/pdf/:path*",
+      },
+      {
+        source: "/sakcat_drive/:path*",
+        destination: "/api/media/sakcat_drive/:path*",
+      },
+    ];
+  },
+
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "500mb",
+      allowedOrigins: ["sakcat.ac.th", "sakcat.site", "localhost:3000"],
+    },
+  },
+  outputFileTracingExcludes: {
+    "*": ["public/images/**/*", "public/pdf/**/*", "public/uploads/**/*"],
+  },
+
+  serverExternalPackages: ["sharp", "mongodb"],
+
+  images: {
+    unoptimized: false,
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "sakcatv1.vercel.app",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "sakcatv2.vercel.app",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "sakcatv3.vercel.app",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "ui-avatars.com",
+        pathname: "/**",
+      },
+    ],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
+
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
+  turbopack: {
+    root: process.cwd(),
+    resolveAlias: {
+      tailwindcss: path.resolve(process.cwd(), "node_modules/tailwindcss"),
+    },
+  },
+
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      tailwindcss: path.resolve(process.cwd(), "node_modules/tailwindcss"),
+    };
+    return config;
+  },
+
+  compress: true,
+  devIndicators: {
+    appIsrStatus: false,
+  },
+};
+
+export default withPWA(nextConfig);
