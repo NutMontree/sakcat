@@ -111,7 +111,7 @@ export default async function RootLayout({
               {/* Footer: ส่วนท้ายเว็บ (จะแสดงทุกหน้า) */}
               <ScrollToTop />
               {/* <ScrollUp /> */}
-              <CookieConsent />
+              {/* <CookieConsent /> */}
               {/* <Footer /> */}
             </ThemeProvider>
           </SessionProvider>
