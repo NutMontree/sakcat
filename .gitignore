@@ -42,9 +42,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# public folder and all its contents (per user request)
-/public/*
-!/public/.gitkeep
+# public folder and all its contents
+/public/uploads/*
+/public/sakcat_drive/*
+/public/user_profiles/*
+/public/attendance_photos/*
   
 # AI Assistant
 .gemini/
