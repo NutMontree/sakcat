@@ -148,8 +148,8 @@ export async function DELETE(req: Request) {
       );
     }
 
-    // 2. Delete all ITA indicators for this year from the 'ita' collection
-    await db.collection("ita").deleteMany({ year });
+    // 2. Delete all ITA indicators for this year from the 'ita_items' collection
+    await db.collection("ita_items").deleteMany({ year });
 
     // 3. Log the activity
     await db.collection("logs").insertOne({
