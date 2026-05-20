@@ -47,10 +47,10 @@ export async function GET() {
     });
 
     return NextResponse.json({ users });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Fetch all users error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch users", users: [] },
+      { error: error.message || String(error), stack: error.stack, users: [] },
       { status: 500 }
     );
   }

@@ -20,8 +20,8 @@ export async function GET() {
       departments: (departments || []).filter(Boolean).sort(),
       factions: (factions || []).filter(Boolean).sort(),
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching profile options:", error);
-    return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message || String(error), stack: error.stack }, { status: 500 });
   }
 }

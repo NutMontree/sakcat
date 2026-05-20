@@ -59,10 +59,10 @@ export async function GET(req: Request) {
       .toArray();
 
     return NextResponse.json(posts);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Fetch Posts Error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch posts" },
+      { error: error.message || String(error), stack: error.stack },
       { status: 500 },
     );
   }
@@ -114,10 +114,10 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true, postId: result.insertedId });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Create Post Error:", error);
     return NextResponse.json(
-      { error: "Failed to create post" },
+      { error: error.message || String(error), stack: error.stack },
       { status: 500 },
     );
   }

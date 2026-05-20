@@ -81,8 +81,10 @@ if (!globalWithMongo._mongoClientPromise) {
       throw err;
     });
   
-  // รันการสร้าง Index ในพื้นหลัง (Background) ไม่ต้องรอให้เสร็จก่อนเริ่มแอป
-  createIndexes(globalWithMongo._mongoClientPromise);
+  // รันการสร้าง Index ในพื้นหลังเฉพาะเมื่อไม่ใช่ Production/Serverless Environment เพื่อความเร็วและเสถียรภาพ
+  if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+    createIndexes(globalWithMongo._mongoClientPromise);
+  }
 }
 
 clientPromise = globalWithMongo._mongoClientPromise;

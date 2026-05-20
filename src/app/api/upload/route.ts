@@ -7,7 +7,6 @@ export async function POST(req: Request) {
     // Dynamic import เพื่อไม่ให้ Vercel bundle fs เข้าไปใน client chunk
     const { writeFile, mkdir } = await import('fs/promises');
     const { join } = await import('path');
-    const sharp = (await import('sharp')).default;
 
     const formData = await req.formData();
     const file = formData.get('file') as File;
@@ -119,6 +118,7 @@ export async function POST(req: Request) {
           }
         } else if (fileType === 'image/gif') {
           try {
+            const sharp = (await import('sharp')).default;
             // Generate a static thumbnail for GIF using sharp (first frame)
             await sharp(filepath)
               .resize(400, 400, { fit: 'cover' })
@@ -147,7 +147,9 @@ export async function POST(req: Request) {
     console.error('Local upload error:', error);
     return NextResponse.json({ 
       success: false, 
-      message: error.message || 'Upload failed' 
+      message: error.message || 'Upload failed',
+      error: error.message || String(error),
+      stack: error.stack
     }, { status: 500 });
   }
 }
