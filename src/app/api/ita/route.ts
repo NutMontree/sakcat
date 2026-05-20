@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { auth } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 /**
  * GET: ดึงข้อมูล ITA ทั้งหมดของปีที่กำหนด
  * Query Parameter: ?year=2568 หรือ ?year=2569

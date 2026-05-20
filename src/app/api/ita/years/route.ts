@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { auth } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const client = await clientPromise;
