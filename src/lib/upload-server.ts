@@ -11,7 +11,56 @@ import { join } from "path";
  */
 
 /**
- * saveFileLocally: บันทึกไฟล์ลงบน Disk ของเครื่อง Server
+ * uploadToCloudinary: อัปโหลดไฟล์ไปยัง Cloudinary ผ่าน REST API
+ */
+export async function uploadToCloudinary(
+  fileData: string | Buffer,
+  folder: string = "uploads"
+): Promise<string | null> {
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "sakcat";
+
+  if (!cloudName) {
+    console.warn("⚠️ Cloudinary cloud name is not configured");
+    return null;
+  }
+
+  try {
+    const formData = new FormData();
+    
+    if (Buffer.isBuffer(fileData)) {
+      const blob = new Blob([fileData]);
+      formData.append("file", blob, "file");
+    } else {
+      formData.append("file", fileData);
+    }
+    
+    formData.append("upload_preset", uploadPreset);
+    formData.append("folder", folder);
+
+    console.log(`☁️ Uploading to Cloudinary (auto) in folder: ${folder}...`);
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Cloudinary responded with ${res.status}: ${errText}`);
+    }
+
+    const data = await res.json();
+    console.log("✅ Cloudinary upload successful:", data.secure_url);
+    return data.secure_url || null;
+  } catch (error) {
+    console.error("❌ uploadToCloudinary Error:", error);
+    return null;
+  }
+}
+
+/**
+ * saveFileLocally: บันทึกไฟล์ลงบน Disk ของเครื่อง Server (หรือ Cloudinary)
  * @param data ข้อมูลไฟล์ (Buffer หรือ Base64 string)
  * @param folder ชื่อโฟลเดอร์ย่อยใน public
  * @param filenamePrefix คำนำหน้าชื่อไฟล์
@@ -22,6 +71,14 @@ export async function saveFileLocally(
   filenamePrefix: string = "file"
 ): Promise<string | null> {
   try {
+    // พยายามอัปโหลดขึ้น Cloudinary ก่อนถ้ามีการกำหนดค่า
+    if (process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) {
+      const cloudinaryUrl = await uploadToCloudinary(data, folder);
+      if (cloudinaryUrl) {
+        return cloudinaryUrl;
+      }
+    }
+
     let buffer: Buffer;
     let ext = "jpg"; // ค่าเริ่มต้นนามสกุลไฟล์
 

@@ -184,6 +184,52 @@ const ProfileModal = ({
   </AnimatePresence>
 );
 
+const SafeAvatar = ({ src, className, size = "text-xl" }: { src: string; className?: string; size?: string }) => {
+  const [error, setError] = useState(false);
+  
+  useEffect(() => {
+    setError(false);
+  }, [src]);
+
+  if (!src || error) {
+    return (
+      <div className={`w-full h-full flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-300 ${className || ""}`}>
+        <UserOutlined style={{ fontSize: size.includes("6xl") ? "60px" : size.includes("4xl") ? "36px" : size.includes("3xl") ? "30px" : size.includes("2xl") ? "24px" : size.includes("xl") ? "20px" : size.includes("sm") ? "14px" : "16px" }} className={size} />
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      className={`w-full h-full object-cover ${className || ""}`}
+      onError={() => setError(true)}
+      alt="User Profile"
+    />
+  );
+};
+
+const SafeCoverImage = ({ src, className }: { src: string; className?: string }) => {
+  const [error, setError] = useState(false);
+  
+  useEffect(() => {
+    setError(false);
+  }, [src]);
+
+  if (!src || error) {
+    return (
+      <div className="absolute inset-0 bg-linear-to-r from-blue-600 to-indigo-600 opacity-20" />
+    );
+  }
+  return (
+    <img
+      src={src}
+      className={`w-full h-full object-cover ${className || ""}`}
+      onError={() => setError(true)}
+      alt="Cover"
+    />
+  );
+};
+
 export default function FriendProfilePage({
   params,
 }: {
@@ -1017,18 +1063,8 @@ export default function FriendProfilePage({
                         }}
                         className="cursor-pointer group"
                       >
-                        <div className="aspect-square rounded-xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden mb-1 border dark:border-zinc-800">
-                          {u.image ? (
-                            <img
-                              src={u.image}
-                              className="w-full h-full object-cover object-top transition-transform group-hover:scale-110"
-                              alt={u.name}
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <UserOutlined className="text-xl text-zinc-300" />
-                            </div>
-                          )}
+                        <div className="aspect-square rounded-xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden mb-1 border dark:border-zinc-800 flex items-center justify-center">
+                          <SafeAvatar src={u.image} size="text-xl" className="transition-transform group-hover:scale-110 object-top" />
                         </div>
                         <p className="text-[10px] font-black truncate dark:text-white">
                           {u.name?.split(" ")[0]}
@@ -1044,11 +1080,7 @@ export default function FriendProfilePage({
               <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm p-4 border dark:border-zinc-800">
                 <div className="flex gap-3 items-center">
                   <div className="w-10 h-10 rounded-full bg-linear-to-tr from-blue-400 to-indigo-500 overflow-hidden flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 shrink-0">
-                    {previewImage ? (
-                      <img src={previewImage} className="w-full h-full object-cover" />
-                    ) : (
-                      <UserOutlined className="text-zinc-300" />
-                    )}
+                    <SafeAvatar src={previewImage || ""} size="text-xl" />
                   </div>
                   <div
                     onClick={() => {
@@ -1113,17 +1145,7 @@ export default function FriendProfilePage({
                           className="min-w-[180px] w-[180px] bg-white dark:bg-zinc-900 rounded-2xl border dark:border-zinc-800 overflow-hidden flex flex-col snap-start group cursor-pointer hover:shadow-xl hover:shadow-blue-500/10 transition-all hover:-translate-y-1"
                         >
                           <div className="relative w-full aspect-square bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                            {u.image ? (
-                              <img
-                                src={u.image}
-                                className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
-                                alt={u.name}
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-800 text-zinc-200">
-                                <UserOutlined className="text-4xl" />
-                              </div>
-                            )}
+                            <SafeAvatar src={u.image} size="text-4xl" className="transition-transform duration-500 group-hover:scale-110 object-top" />
                             <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                             <button
                               onClick={(e) => {
@@ -1178,14 +1200,7 @@ export default function FriendProfilePage({
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden flex items-center justify-center border dark:border-zinc-700">
-                          {(post.authorImage || post.userImage || (String(post.authorId?.$oid || post.authorId || "") === id ? formData.image : null)) ? (
-                            <img
-                              src={post.authorImage || post.userImage || (String(post.authorId?.$oid || post.authorId || "") === id ? formData.image : "")}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <UserOutlined className="text-zinc-300" />
-                          )}
+                          <SafeAvatar src={post.authorImage || post.userImage || (String(post.authorId?.$oid || post.authorId || "") === id ? formData.image : "")} size="text-xl" />
                         </div>
                         <div>
                           <h4 className="font-black text-sm text-zinc-900 dark:text-white hover:underline cursor-pointer" onClick={() => router.push(`/dashboard/profile/${post.authorId?.$oid || post.authorId || id}`)}>
@@ -1278,9 +1293,7 @@ export default function FriendProfilePage({
                       <div className="border dark:border-zinc-800 rounded-xl overflow-hidden bg-zinc-50/50 dark:bg-zinc-800/30 p-4 mb-4">
                          <div className="flex items-center gap-2 mb-3">
                             <div className="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden border dark:border-zinc-600">
-                               {(post.sharedPostData.authorImage) && (
-                                 <img src={post.sharedPostData.authorImage} className="w-full h-full object-cover" />
-                               )}
+                               <SafeAvatar src={post.sharedPostData.authorImage} size="text-sm" />
                             </div>
                             <div>
                                <span className="font-black text-xs text-zinc-900 dark:text-white block hover:underline cursor-pointer">
@@ -1454,16 +1467,7 @@ export default function FriendProfilePage({
                                   {/* Main Comment */}
                                   <div className="flex gap-2 group/comment">
                                     <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0 mt-1 shadow-sm border dark:border-zinc-700">
-                                      {comment.userImage ? (
-                                        <img
-                                          src={comment.userImage}
-                                          className="w-full h-full object-cover"
-                                        />
-                                      ) : (
-                                        <div className="w-full h-full flex items-center justify-center">
-                                          <UserOutlined className="text-zinc-300 text-[10px]" />
-                                        </div>
-                                      )}
+                                      <SafeAvatar src={comment.userImage} size="text-sm" />
                                     </div>
                                     <div className="flex-1 space-y-1">
                                       <div className="flex items-center gap-2 group">
@@ -1640,16 +1644,7 @@ export default function FriendProfilePage({
                                             <div className="absolute -left-6 top-4 w-6 h-[1.5px] bg-zinc-200 dark:bg-zinc-800" />
 
                                             <div className="w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0 mt-1 border dark:border-zinc-700">
-                                              {reply.userImage ? (
-                                                <img
-                                                  src={reply.userImage}
-                                                  className="w-full h-full object-cover"
-                                                />
-                                              ) : (
-                                                <div className="w-full h-full flex items-center justify-center">
-                                                  <UserOutlined className="text-zinc-300 text-[8px]" />
-                                                </div>
-                                              )}
+                                              <SafeAvatar src={reply.userImage} size="text-[10px]" />
                                             </div>
                                             <div className="flex-1 space-y-1">
                                               <div className="flex items-center gap-2 group">
@@ -1918,16 +1913,7 @@ export default function FriendProfilePage({
                         {commentingPostId === post._id && (
                           <div className="flex gap-2 mt-4">
                             <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0 mt-1 shadow-sm border dark:border-zinc-700">
-                              {session?.user?.image ? (
-                                <img
-                                  src={session.user.image}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                  <UserOutlined className="text-zinc-300 text-[10px]" />
-                                </div>
-                              )}
+                              <SafeAvatar src={session?.user?.image || ""} size="text-sm" />
                             </div>
                             <div className="flex-1 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl px-4 py-2 relative border dark:border-zinc-700/50 focus-within:ring-1 focus-within:ring-blue-500/50 transition-all">
                               <input
@@ -2347,7 +2333,7 @@ export default function FriendProfilePage({
         };
 
         return (
-          <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border dark:border-zinc-800 p-6 min-h-[500px]">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border dark:border-zinc-800 p-6 min-h-125">
             <h2 className="text-2xl font-black text-zinc-900 dark:text-white mb-6">
               เกี่ยวกับ
             </h2>
@@ -2416,15 +2402,7 @@ export default function FriendProfilePage({
                   className="group flex items-center gap-4 p-4 rounded-2xl border dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 cursor-pointer transition-all hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/5"
                 >
                   <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-linear-to-tr from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-700 flex items-center justify-center shrink-0">
-                    {u.image ? (
-                      <img
-                        src={u.image}
-                        className="w-full h-full object-cover transition-transform group-hover:scale-110"
-                        alt={u.name}
-                      />
-                    ) : (
-                      <UserOutlined className="text-2xl text-zinc-400" />
-                    )}
+                    <SafeAvatar src={u.image} size="text-2xl" className="transition-transform group-hover:scale-110" />
                   </div>
                   <div className="overflow-hidden">
                     <h4 className="font-black text-sm text-zinc-900 dark:text-white truncate">
@@ -2495,12 +2473,7 @@ export default function FriendProfilePage({
         {/* Header Section */}
         <div className="bg-white dark:bg-zinc-900 shadow-sm rounded-b-xl overflow-hidden mb-4 border-b dark:border-zinc-800">
           <div className="h-[180px] sm:h-[300px] lg:h-[400px] relative bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
-            {formData.coverImage && (
-              <img
-                src={formData.coverImage}
-                className="w-full h-full object-cover"
-              />
-            )}
+            <SafeCoverImage src={formData.coverImage} />
             <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
           </div>
 
@@ -2508,17 +2481,7 @@ export default function FriendProfilePage({
             <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 pt-10 -mt-12 sm:-mt-20 mb-6 px-2">
               <div className="relative group">
                 <div className="h-40 w-40 sm:h-44 sm:w-44 lg:h-48 lg:w-48 rounded-full overflow-hidden border-4 border-white dark:border-zinc-900 bg-white dark:bg-zinc-800 shadow-xl transition-transform group-hover:scale-[1.01]">
-                  {formData.image ? (
-                    <img
-                      src={formData.image}
-                      className="w-full h-full object-cover"
-                      alt="Profile"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-800 text-zinc-200">
-                      <UserOutlined className="text-6xl" />
-                    </div>
-                  )}
+                  <SafeAvatar src={formData.image} size="text-6xl" />
                 </div>
               </div>
               <div className="flex-1 text-center sm:text-left mb-2 z-10 overflow-hidden">
@@ -2547,15 +2510,7 @@ export default function FriendProfilePage({
                         key={String(u._id)}
                         className="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900 bg-zinc-200 overflow-hidden shadow-sm flex items-center justify-center"
                       >
-                        {u.image ? (
-                          <img
-                            src={u.image}
-                            className="w-full h-full object-cover"
-                            alt="Friend"
-                          />
-                        ) : (
-                          <UserOutlined className="text-[10px] text-zinc-400" />
-                        )}
+                        <SafeAvatar src={u.image} size="text-[10px]" />
                       </div>
                     ))}
                   <span className="ml-4 text-sm font-bold text-zinc-400 tracking-tight">
@@ -2795,13 +2750,7 @@ export default function FriendProfilePage({
                     <div className="flex items-center gap-4">
                       <div className="relative">
                         <div className="w-12 h-12 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 border-2 border-white dark:border-zinc-700 shadow-sm transition-transform group-hover:scale-105">
-                          {u.image ? (
-                            <img src={u.image} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <UserOutlined className="text-zinc-300 text-lg" />
-                            </div>
-                          )}
+                          <SafeAvatar src={u.image} size="text-lg" />
                         </div>
                         <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-linear-to-b from-blue-400 to-blue-600 border-2 border-white dark:border-zinc-800 flex items-center justify-center shadow-sm">
                           <LikeFilled style={{ color: 'white' }} className="text-[8px]" />
