@@ -214,7 +214,7 @@ export default function ItaDashboard() {
   const [selectedOit, setSelectedOit] = useState("O1");
 
   // Dynamic years list states
-  const [years, setYears] = useState<string[]>(["2569"]);
+  const [years, setYears] = useState<string[]>(["2568", "2569"]);
   const [showAddYearModal, setShowAddYearModal] = useState(false);
   const [newYearInput, setNewYearInput] = useState("");
   const [isAddingYear, setIsAddingYear] = useState(false);
@@ -225,8 +225,7 @@ export default function ItaDashboard() {
       if (res.ok) {
         const data = await res.json();
         if (data.years && data.years.length > 0) {
-          // Filter out year 2568 so it cannot be managed or modified from the admin dashboard
-          setYears(data.years.filter((y: string) => y !== "2568"));
+          setYears(data.years);
         }
       }
     } catch (error) {
@@ -266,6 +265,48 @@ export default function ItaDashboard() {
       alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
     } finally {
       setIsAddingYear(false);
+    }
+  };
+
+  const handleDeleteYear = async (yearToDelete: string) => {
+    const isConfirm = window.confirm(
+      `คุณแน่ใจหรือไม่ว่าต้องการลบปีงบประมาณ ${yearToDelete}?\nการดำเนินการนี้จะลบข้อมูลดัชนี OIT ทั้งหมดของปีนี้ และไม่สามารถกู้คืนได้!`
+    );
+    if (!isConfirm) return;
+
+    try {
+      const res = await fetch(`/api/ita/years?year=${yearToDelete}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message);
+        // We fetch the updated list of years first
+        const fetchRes = await fetch("/api/ita/years");
+        let updatedYears = ["2569"];
+        if (fetchRes.ok) {
+          const fetchData = await fetchRes.json();
+          if (fetchData.years && fetchData.years.length > 0) {
+            updatedYears = fetchData.years;
+            setYears(fetchData.years);
+          }
+        }
+        
+        // Update selected year if the deleted one was selected
+        if (selectedYear === yearToDelete) {
+          const remaining = updatedYears.filter((y) => y !== yearToDelete);
+          if (remaining.length > 0) {
+            setSelectedYear(remaining[remaining.length - 1]);
+          } else {
+            setSelectedYear("");
+          }
+        }
+      } else {
+        alert(data.error || "เกิดข้อผิดพลาด");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
     }
   };
 
@@ -512,17 +553,30 @@ export default function ItaDashboard() {
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-1.5 bg-white/50 backdrop-blur-xl rounded-2xl border border-slate-200 p-1.5 shadow-md dark:bg-slate-900/50 dark:border-slate-700">
               {years.map((year) => (
-                <button
-                  key={year}
-                  onClick={() => setSelectedYear(year)}
-                  className={`relative px-6 py-2.5 rounded-xl text-sm font-black transition-all ${
-                    selectedYear === year
-                      ? "text-white bg-linear-to-r from-blue-600 to-teal-500 shadow-md"
-                      : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                  }`}
-                >
-                  ปีงบประมาณ {year}
-                </button>
+                <div key={year} className="relative flex items-center">
+                  <button
+                    onClick={() => setSelectedYear(year)}
+                    className={`relative px-6 py-2.5 rounded-xl text-sm font-black transition-all ${
+                      selectedYear === year
+                        ? "text-white bg-linear-to-r from-blue-600 to-teal-500 shadow-md pr-10 animate-fade-in"
+                        : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                    }`}
+                  >
+                    ปีงบประมาณ {year}
+                  </button>
+                  {selectedYear === year && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteYear(year);
+                      }}
+                      className="absolute right-2.5 p-1 rounded-md text-white hover:text-red-200 hover:bg-red-500/20 transition-all cursor-pointer z-10"
+                      title={`ลบปีงบประมาณ ${year}`}
+                    >
+                      <Trash2 size={13} strokeWidth={2.5} />
+                    </button>
+                  )}
+                </div>
               ))}
             </div>
 

@@ -82,27 +82,31 @@ export default function LoginPage() {
           retries--;
         }
 
-        // 3. นำทางผู้ใช้งานไปยังหน้าปลายทางที่ถูกต้องตามสิทธิ์และ callbackUrl
-        if (role === "student") {
-          if (callbackUrl && callbackUrl.startsWith("/student")) {
-            router.replace(callbackUrl);
+        // 3. นำทางผู้ใช้งานไปยังหน้าปลายทางที่ถูกต้องตามสิทธิ์และ callbackUrl พร้อมบังคับรีเฟรชเต็มรูปแบบ
+        const targetUrl = (() => {
+          if (role === "student") {
+            if (callbackUrl && callbackUrl.startsWith("/student")) {
+              return callbackUrl;
+            } else {
+              return "/student/flagpole";
+            }
+          } else if (["super_admin", "admin"].includes(role)) {
+            if (callbackUrl && !callbackUrl.startsWith("/login")) {
+              return callbackUrl;
+            } else {
+              return "/dashboard";
+            }
           } else {
-            router.replace("/student/flagpole");
+            // สิทธิ์ปกติ (user)
+            if (callbackUrl && !callbackUrl.startsWith("/dashboard") && !callbackUrl.startsWith("/manage-roles") && !callbackUrl.startsWith("/attendance-")) {
+              return callbackUrl;
+            } else {
+              return "/";
+            }
           }
-        } else if (["super_admin", "admin"].includes(role)) {
-          if (callbackUrl && !callbackUrl.startsWith("/login")) {
-            router.replace(callbackUrl);
-          } else {
-            router.replace("/dashboard");
-          }
-        } else {
-          // สิทธิ์ปกติ (user)
-          if (callbackUrl && !callbackUrl.startsWith("/dashboard") && !callbackUrl.startsWith("/manage-roles") && !callbackUrl.startsWith("/attendance-")) {
-            router.replace(callbackUrl);
-          } else {
-            router.replace("/");
-          }
-        }
+        })();
+
+        window.location.href = targetUrl;
       }
     } catch (err) {
       setError("เกิดข้อผิดพลาดในการเชื่อมต่อ");

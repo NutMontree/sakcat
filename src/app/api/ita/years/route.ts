@@ -103,3 +103,66 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userRole = (session?.user as any)?.role?.toLowerCase();
+    const ALLOWED_OIT_ROLES = ["super_admin", "admin"];
+
+    const client = await clientPromise;
+    const db = client.db("sakcat_db");
+
+    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
+    const canManageSystem =
+      rolePerms?.permissions?.manage_system ||
+      ALLOWED_OIT_ROLES.includes(userRole);
+
+    if (!canManageSystem) {
+      return NextResponse.json(
+        { error: "คุณไม่มีสิทธิ์ในการลบปีงบประมาณ" },
+        { status: 403 }
+      );
+    }
+
+    const { searchParams } = new URL(req.url);
+    const year = searchParams.get("year");
+
+    if (!year || !/^\d{4}$/.test(year)) {
+      return NextResponse.json(
+        { error: "กรุณาระบุปีงบประมาณเป็นตัวเลข 4 หลัก" },
+        { status: 400 }
+      );
+    }
+
+    // 1. Delete from ita_years
+    const deleteResult = await db.collection("ita_years").deleteOne({ year });
+    if (deleteResult.deletedCount === 0) {
+      return NextResponse.json(
+        { error: `ไม่พบปีงบประมาณ ${year} ในระบบ` },
+        { status: 404 }
+      );
+    }
+
+    // 2. Delete all ITA indicators for this year from the 'ita' collection
+    await db.collection("ita").deleteMany({ year });
+
+    // 3. Log the activity
+    await db.collection("logs").insertOne({
+      userName: session.user?.name || (session.user as any)?.username || "System",
+      action: "DELETE_ITA_YEAR",
+      details: `ลบปีงบประมาณสำหรับการประเมิน OIT: ${year} พร้อมข้อมูลดัชนีทั้งหมด`,
+      timestamp: new Date(),
+      role: userRole
+    });
+
+    return NextResponse.json({ success: true, message: `ลบปีงบประมาณ ${year} และข้อมูล OIT ทั้งหมดเรียบร้อยแล้ว` });
+  } catch (error: any) {
+    console.error("DELETE ITA Year Error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
