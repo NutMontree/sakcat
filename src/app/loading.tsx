@@ -1,5 +1,6 @@
-import FullPageLoader from "@/components/FullPageLoader";
+// import FullPageLoader from "@/components/FullPageLoader";
 
 export default function RootLoading() {
-  return <FullPageLoader message="กำลังเปลี่ยนหน้า..." subtitle="ระบบกำลังเตรียมเนื้อหาหน้าถัดไปสำหรับคุณ" />;
+  // คอมเมนต์ตัวโหลดหน้า ไม่ต้องแสดง
+  return null;
 }
