@@ -52,7 +52,7 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(await file.arrayBuffer());
 
     // Try uploading to Cloudinary first if configured
-    if (process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) {
+    if (process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dxulshldj") {
       try {
         const { uploadToCloudinary } = await import("@/lib/upload-server");
         const cloudinaryUrl = await uploadToCloudinary(buffer, sanitizedFolder);

@@ -17,13 +17,8 @@ export async function uploadToCloudinary(
   fileData: string | Buffer,
   folder: string = "uploads"
 ): Promise<string | null> {
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dxulshldj";
   const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "sakcat";
-
-  if (!cloudName) {
-    console.warn("⚠️ Cloudinary cloud name is not configured");
-    return null;
-  }
 
   try {
     const formData = new FormData();
@@ -72,7 +67,7 @@ export async function saveFileLocally(
 ): Promise<string | null> {
   try {
     // พยายามอัปโหลดขึ้น Cloudinary ก่อนถ้ามีการกำหนดค่า
-    if (process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) {
+    if (process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dxulshldj") {
       const cloudinaryUrl = await uploadToCloudinary(data, folder);
       if (cloudinaryUrl) {
         return cloudinaryUrl;
