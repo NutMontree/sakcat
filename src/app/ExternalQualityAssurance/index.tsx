@@ -3,128 +3,184 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FileTextOutlined, SafetyCertificateOutlined } from "@ant-design/icons";
+import { FileTextOutlined, SafetyCertificateOutlined, ArrowRightOutlined, CheckCircleOutlined } from "@ant-design/icons";
 
 const ExternalQualityAssurance = () => {
   return (
-    <section className="py-16 dark:bg-transparent">
-      <div className="container mx-auto px-2 lg:px-20">
+    <section className="relative py-24 overflow-hidden dark:bg-transparent bg-slate-50/50">
+      {/* Premium Background Ambient Glows */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-125 bg-linear-to-tr from-blue-500/10 to-cyan-500/5 rounded-full blur-3xl pointer-events-none opacity-70 dark:opacity-40" />
+      <div className="absolute bottom-10 left-10 w-[300px] h-[300px] bg-emerald-500/5 rounded-full blur-3xl pointer-events-none opacity-50" />
+
+      <div className="container mx-auto px-4 lg:px-20 relative z-10">
+        
         {/* --- Header Section --- */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           viewport={{ once: true }}
-          className="mb-12 text-center"
+          className="mb-16 text-center max-w-2xl mx-auto"
         >
-          {/* Badge: ปรับสีพื้นหลังและตัวหนังสือใน Dark Mode */}
-          <span className="mb-2 inline-block rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold tracking-wide text-blue-600 uppercase dark:bg-blue-900/30 dark:text-blue-300">
-            Quality Assurance
+          {/* Tagline Badge */}
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 text-xs font-bold border border-blue-100/50 dark:border-blue-900/30 uppercase tracking-wider mb-4">
+            <CheckCircleOutlined className="text-xs" /> Accreditation & Standards
           </span>
 
-          {/* Heading: สีขาวใน Dark Mode */}
-          <h2 className="text-3xl font-extrabold text-slate-800 md:text-4xl dark:text-white">
+          {/* Heading */}
+          <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
             การรับรองมาตรฐาน
-            <span className="text-blue-600 dark:text-blue-400">&</span>
+            <span className="bg-linear-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent px-2">&</span>
             ความโปร่งใส
           </h2>
 
-          {/* Description: สีเทาอ่อนใน Dark Mode */}
-          <p className="mt-4 text-slate-500 dark:text-slate-400">
-            รายงานผลการประกันคุณภาพภายนอก และการประเมินคุณธรรมและความโปร่งใส (ITA)
+          {/* Description */}
+          <p className="mt-4 text-sm md:text-base leading-relaxed text-slate-500 dark:text-zinc-400 font-medium">
+            รายงานผลการประกันคุณภาพการศึกษาภายนอก และผลการประเมินคุณธรรมและความโปร่งใส (ITA) <br className="hidden md:inline" />
+            เพื่อการันตีการดำเนินงานด้วยหลักธรรมาภิบาลและความเป็นเลิศระดับสากล
           </p>
         </motion.div>
 
-        {/* --- Content Grid --- */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
-          viewport={{ once: true }}
-          // className="grid grid-cols-1 gap-8 md:grid-cols-2 "
-          className=""
-        >
-          {/* Card 1: ประกันคุณภาพ (Official Style) */}
-          {/* <Link
-            href="/pdf/งานประกันฯ/ฉบับจริงรายงานการประกันภายนอกรอบ5.pdf"
-            target="_blank" // แนะนำให้เปิด PDF ในแท็บใหม่
-            rel="noopener noreferrer"
-            className="group block h-full"
+        {/* --- Content Grid (Centered for Single Card) --- */}
+        <div className="max-w-2xl mx-auto">
+          
+          {/* Card 1: ประกันคุณภาพภายนอก (สมศ.) - ปิดใช้งานชั่วคราวโดยใช้เงื่อนไข false */}
+          {false && (
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              viewport={{ once: true }}
+            >
+              <Link
+                href="/pdf/งานประกันฯ/ฉบับจริงรายงานการประกันภายนอกรอบ5.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block h-full relative"
+              >
+                {/* Back Card Glow effect */}
+                <div className="absolute inset-0 bg-linear-to-brrom-blue-500/20 to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 rounded-3xl" />
+                
+                <article className="relative h-full flex flex-col justify-between rounded-3xl border border-slate-200/80 bg-white/70 backdrop-blur-md p-8 md:p-10 shadow-sm transition-all duration-300 group-hover:-translate-y-2 group-hover:border-blue-400/40 group-hover:shadow-xl group-hover:shadow-blue-500/5 dark:border-zinc-800/80 dark:bg-zinc-900/60 dark:group-hover:border-blue-500/40">
+                  <div>
+                    {/* Top Badge & Date */}
+                    <div className="flex items-center justify-between mb-6">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 text-[10px] font-bold border border-blue-100/30 dark:border-blue-900/20">
+                        ผ่านการรับรอง สมศ. รอบ 5
+                      </span>
+                      <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">
+                        ONESQA Certified
+                      </span>
+                    </div>
+
+                    {/* Logo Container */}
+                    <div className="relative mb-6 inline-block">
+                      <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-slate-50 dark:bg-zinc-800 border border-slate-100 dark:border-zinc-700/60 p-3 transition-transform duration-500 group-hover:scale-105 shadow-inner">
+                        <Image
+                          src="/images/logo/logoTH.webp"
+                          className="h-full w-full object-contain"
+                          alt="Logo Quality Assurance"
+                          width={60}
+                          height={60}
+                        />
+                      </div>
+                      {/* Small Corner Badge */}
+                      <div className="absolute -right-2 -bottom-2 flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-white shadow-md border border-white dark:border-zinc-900 dark:bg-blue-500">
+                        <FileTextOutlined className="text-xs" />
+                      </div>
+                    </div>
+
+                    {/* Title & Body */}
+                    <h3 className="mb-3 text-xl font-bold text-slate-800 dark:text-white transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      รายงานการประกันคุณภาพภายนอก
+                    </h3>
+
+                    <p className="text-sm leading-relaxed text-slate-500 dark:text-zinc-400 font-semibold mb-8">
+                      รายงานสรุปผลการประเมินการประกันคุณภาพการศึกษาภายนอกด้านวิชาชีพและการจัดการเรียนรู้ จาก สมศ. (รอบที่ 5) เพื่อยืนยันคุณภาพมาตรฐานวิทยาลัยเกษตรและเทคโนโลยีศรีสะเกษ
+                    </p>
+                  </div>
+
+                  {/* Footer Link Button */}
+                  <div className="pt-4 border-t border-slate-100 dark:border-zinc-800/80 flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-400 group-hover:text-blue-500 transition-colors">
+                      Format: PDF Document
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 transition-transform duration-300 group-hover:translate-x-1">
+                      เปิดเอกสารฉบับจริง <ArrowRightOutlined className="text-[10px]" />
+                    </span>
+                  </div>
+                </article>
+              </Link>
+            </motion.div>
+          )}
+
+          {/* Card 2: ประเมินคุณธรรมและความโปร่งใส (ITA) */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            viewport={{ once: true }}
           >
-            <article className="relative flex h-full flex-col items-center justify-center rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-500/10 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-blue-500/30 dark:hover:shadow-blue-900/20">
-              <div className="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 rounded-full bg-blue-50 opacity-50 blur-2xl transition-opacity group-hover:opacity-100 dark:bg-blue-900/20" />
+            <Link
+              href="/ITA"
+              className="group block h-full relative"
+            >
+              {/* Back Card Glow effect */}
+              <div className="absolute inset-0 bg-linear-to-br from-cyan-500/20 to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 rounded-3xl" />
+              
+              <article className="relative h-full flex flex-col justify-between rounded-3xl border border-slate-200/80 bg-white/70 backdrop-blur-md p-8 md:p-10 shadow-sm transition-all duration-300 group-hover:-translate-y-2 group-hover:border-cyan-400/40 group-hover:shadow-xl group-hover:shadow-cyan-500/5 dark:border-zinc-800/80 dark:bg-zinc-900/60 dark:group-hover:border-cyan-500/40">
+                <div>
+                  {/* Top Badge & Date */}
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-cyan-50 dark:bg-cyan-950/50 text-cyan-600 dark:text-cyan-400 text-[10px] font-bold border border-cyan-100/30 dark:border-cyan-900/20">
+                      ระบบประเมินคุณธรรม OIT
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">
+                      ITA Transparency
+                    </span>
+                  </div>
 
-              <div className="relative mb-6">
-                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-blue-50 p-4 transition-transform duration-500 group-hover:scale-110 dark:bg-zinc-800">
-                  <Image
-                    src="/images/logo/logoTH.webp"
-                    className="h-full w-full object-contain"
-                    alt="Logo Quality Assurance"
-                    width={48}
-                    height={48}
-                  />
+                  {/* Logo Container */}
+                  <div className="relative mb-6 inline-block">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-slate-50 dark:bg-zinc-800 border border-slate-100 dark:border-zinc-700/60 p-2.5 transition-transform duration-500 group-hover:scale-105 shadow-inner">
+                      <Image
+                        src="/images/ITALogo1.webp"
+                        className="h-full w-full object-contain"
+                        alt="Logo ITA"
+                        width={60}
+                        height={60}
+                      />
+                    </div>
+                    {/* Small Corner Badge */}
+                    <div className="absolute -right-2 -bottom-2 flex h-7 w-7 items-center justify-center rounded-full bg-cyan-600 text-white shadow-md border border-white dark:border-zinc-900 dark:bg-cyan-500">
+                      <SafetyCertificateOutlined className="text-xs" />
+                    </div>
+                  </div>
+
+                  {/* Title & Body */}
+                  <h3 className="mb-3 text-xl font-bold text-slate-800 dark:text-white transition-colors group-hover:text-cyan-600 dark:group-hover:text-cyan-400">
+                    การประเมินคุณธรรม (ITA)
+                  </h3>
+
+                  <p className="text-sm leading-relaxed text-slate-500 dark:text-zinc-400 font-semibold mb-8">
+                    ข้อมูลผลการประเมินคุณธรรมและความโปร่งใสในการดำเนินงานของหน่วยงานภาครัฐ (OIT) เพื่อส่งเสริมความโปร่งใส ตรวจสอบได้ และป้องกันการทุจริตตามนโยบายธรรมาภิบาล
+                  </p>
                 </div>
-                <div className="absolute -right-2 -bottom-2 flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white shadow-md dark:bg-blue-500">
-                  <FileTextOutlined />
+
+                {/* Footer Link Button */}
+                <div className="pt-4 border-t border-slate-100 dark:border-zinc-800/80 flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-400 group-hover:text-cyan-500 transition-colors">
+                    Format: Interactive Portal
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 transition-transform duration-300 group-hover:translate-x-1">
+                    เข้าสู่เว็บไซต์ OIT Portal <ArrowRightOutlined className="text-[10px]" />
+                  </span>
                 </div>
-              </div>
+              </article>
+            </Link>
+          </motion.div>
 
-              <h3 className="mb-3 text-xl font-bold text-slate-800 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
-                รายงานการประกันคุณภาพภายนอก
-              </h3>
-
-              <p className="mb-6 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-                รายงานผลการประกันคุณภาพภายนอกด้านการอาชีวศึกษา <br />
-                วิทยาลัยเกษตรและเทคโนโลยีศรีสะเกษ (รอบ 5)
-              </p>
-
-              <span className="mt-auto inline-flex items-center text-sm font-semibold text-blue-600 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 dark:text-blue-400">
-                ดาวน์โหลดเอกสาร PDF &rarr;
-              </span>
-            </article>
-          </Link> */}
-
-          {/* Card 2: ITA (Transparency Style) */}
-          <Link href="/ITA" rel="noopener noreferrer" className="group block h-full">
-            <article className="relative flex h-full flex-col items-center justify-center rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-cyan-200 hover:shadow-xl hover:shadow-cyan-500/10 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-cyan-500/30 dark:hover:shadow-cyan-900/20">
-              {/* Decorative Icon Background */}
-              <div className="absolute bottom-0 left-0 -mb-4 -ml-4 h-24 w-24 rounded-full bg-cyan-50 opacity-50 blur-2xl transition-opacity group-hover:opacity-100 dark:bg-cyan-900/20" />
-
-              <div className="relative mb-6">
-                {/* Icon Circle Background */}
-                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-cyan-50 p-2 transition-transform duration-500 group-hover:scale-110 dark:bg-zinc-800">
-                  <Image
-                    src="/images/ITALogo1.webp"
-                    className="h-full w-full object-contain"
-                    alt="Logo ITA"
-                    width={48}
-                    height={48}
-                  />
-                </div>
-                {/* Small Badge Icon */}
-                <div className="absolute -right-2 -bottom-2 flex h-8 w-8 items-center justify-center rounded-full bg-cyan-600 text-white shadow-md dark:bg-cyan-500">
-                  <SafetyCertificateOutlined />
-                </div>
-              </div>
-
-              {/* Title */}
-              <h3 className="mb-3 text-xl font-bold text-slate-800 transition-colors group-hover:text-cyan-600 dark:text-white dark:group-hover:text-cyan-400">
-                การประเมินคุณธรรม (ITA)
-              </h3>
-
-              {/* Description */}
-              <p className="mb-6 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-                Integrity and Transparency Assessment <br />
-                การประเมินคุณธรรมและความโปร่งใสในการดำเนินงาน
-              </p>
-
-              {/* Link Text with Animation */}
-              <span className="mt-auto inline-flex items-center text-sm font-semibold text-cyan-600 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 dark:text-cyan-400">
-                เข้าสู่เว็บไซต์ ITA &rarr;
-              </span>
-            </article>
-          </Link>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
