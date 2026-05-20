@@ -61,13 +61,23 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { year, oitCode, title, description, links } = body;
+    const { year, oitCode, title, description, links, action } = body;
 
     if (!year || !oitCode) {
       return NextResponse.json(
         { error: "กรุณาระบุปีงบประมาณและรหัสหัวข้อ OIT (เช่น O1)" },
         { status: 400 }
       );
+    }
+
+    // หากเป็นการขอเช็ดล้างข้อมูล (Delete)
+    if (action === "delete") {
+      const deleteResult = await db.collection("ita_items").deleteOne({ year: year, oitCode: oitCode });
+      return NextResponse.json({
+        success: true,
+        message: `ลบข้อมูล ${oitCode} สำเร็จเรียบร้อยแล้ว`,
+        deleteResult,
+      });
     }
 
     // บันทึกหรืออัปเดตข้อมูล (Upsert) โดยค้นหาจาก year และ oitCode

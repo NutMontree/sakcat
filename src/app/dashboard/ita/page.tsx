@@ -425,7 +425,8 @@ export default function ItaDashboard() {
 
     if (existing) {
       setTitle(existing.title || defaultMeta?.title || "");
-      setDescription(existing.description || defaultMeta?.desc || "");
+      // ใช้ค่า description เดิมที่มีใน DB ตรงๆ (แม้ว่าจะเป็นค่าว่าง "") โดยไม่แปลงกลับเป็นค่าเริ่มต้น
+      setDescription(typeof existing.description === "string" ? existing.description : (defaultMeta?.desc || ""));
       setLinks(existing.links || []);
     } else {
       // Pre-populate with official OIT structure defaults
@@ -510,11 +511,57 @@ export default function ItaDashboard() {
     }
   };
 
+  // Clear/delete all data for the active OIT code physically from DB
+  const handleClearData = async () => {
+    if (!window.confirm(`คุณแน่ใจหรือไม่ที่จะลบ/ล้างข้อมูลทั้งหมดของหัวข้อ ${selectedOit}? การดำเนินการนี้จะเช็ดล้างข้อมูลออกทั้งหมด`)) {
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      setMessage(null);
+
+      const res = await fetch("/api/ita", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          year: selectedYear,
+          oitCode: selectedOit,
+          action: "delete",
+        }),
+      });
+
+      if (res.ok) {
+        setMessage({
+          type: "success",
+          text: `เช็ดล้างข้อมูลดัชนี ${selectedOit} และเปลี่ยนสถานะเป็นยังไม่บันทึกเสร็จสิ้น!`,
+        });
+        
+        // Reset form fields to original defaults
+        const defaultMeta = oitIndicators.find((ind) => ind.code === selectedOit);
+        setTitle(defaultMeta?.title || "");
+        setDescription(defaultMeta?.desc || "");
+        setLinks([]);
+
+        // Refresh database items list
+        fetchItaData(selectedYear);
+      } else {
+        const errData = await res.json();
+        setMessage({ type: "error", text: errData.error || "เกิดข้อผิดพลาดในการลบข้อมูล" });
+      }
+    } catch (error) {
+      console.error("Delete Error:", error);
+      setMessage({ type: "error", text: "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์เพื่อลบข้อมูลได้" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   // Auth checking
   if (status === "loading") {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
+        <Loader2 className="w-12 h-12 text-orange-500 animate-spin" />
         <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs animate-pulse">
           Loading Access Panel...
         </p>
@@ -559,8 +606,8 @@ export default function ItaDashboard() {
     <div className="relative min-h-screen bg-transparent transition-colors duration-500 overflow-hidden">
       {/* Background Mesh Gradients */}
       <div className="fixed inset-0 z-[-1] pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px] dark:bg-blue-600/10" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-teal-500/10 blur-[120px] dark:bg-teal-600/10" />
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-orange-500/10 blur-[120px] dark:bg-orange-600/10" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-emerald-500/10 blur-[120px] dark:bg-emerald-600/10" />
       </div>
 
       <div className="max-w-[1600px] mx-auto w-full px-4 py-8 md:py-12 relative">
@@ -569,7 +616,7 @@ export default function ItaDashboard() {
         <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <h1 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight flex items-center gap-3">
-              <FileText className="text-blue-500" />
+              <FileText className="text-orange-500" />
               จัดการข้อมูลการประเมินคุณธรรมและความโปร่งใส (OIT)
             </h1>
             <p className="text-zinc-500 dark:text-zinc-400 mt-1 font-semibold text-sm">
@@ -586,7 +633,7 @@ export default function ItaDashboard() {
                     onClick={() => setSelectedYear(year)}
                     className={`relative px-6 py-2.5 rounded-xl text-sm font-black transition-all ${
                       selectedYear === year
-                        ? "text-white bg-linear-to-r from-blue-600 to-teal-500 shadow-md pr-10 animate-fade-in"
+                        ? "text-white bg-linear-to-r from-orange-600 to-emerald-500 shadow-md pr-10 animate-fade-in"
                         : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
                     }`}
                   >
@@ -610,7 +657,7 @@ export default function ItaDashboard() {
 
             <button
               onClick={() => setShowAddYearModal(true)}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-md cursor-pointer"
+              className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-md cursor-pointer"
             >
               <Plus size={14} strokeWidth={3} />
               <span>เพิ่มปีงบประมาณ</span>
@@ -622,7 +669,7 @@ export default function ItaDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* OIT Sidebar selector (O1 - O37 or O1 - O23) */}
           <div className="lg:col-span-4 bg-white/60 dark:bg-zinc-900/60 border border-slate-200/50 dark:border-zinc-800/80 backdrop-blur-xl rounded-[2.5rem] p-6 max-h-[750px] overflow-y-auto shadow-xl scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700">
-            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400 mb-4 pb-2 border-b border-zinc-200 dark:border-zinc-800">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-orange-600 dark:text-orange-400 mb-4 pb-2 border-b border-zinc-200 dark:border-zinc-800">
               ตัวชี้วัดย่อยทั้งหมด (O1 - {selectedYear === "2569" ? "O23" : "O37"})
             </h3>
             <div className="space-y-1">
@@ -631,7 +678,11 @@ export default function ItaDashboard() {
                 const hasData = dbItems.some((item) => {
                   if (item.oitCode !== ind.code) return false;
                   const hasLinks = Array.isArray(item.links) && item.links.length > 0;
-                  const hasDesc = typeof item.description === "string" && item.description.trim().length > 0;
+                  
+                  // ตรวจสอบว่าคำอธิบายแตกต่างจากค่าเริ่มต้น และไม่เป็นค่าว่างเปล่า
+                  const hasDesc = typeof item.description === "string" && 
+                                  item.description.trim().length > 0 && 
+                                  item.description.trim() !== ind.desc.trim();
                   return hasLinks || hasDesc;
                 });
 
@@ -641,7 +692,7 @@ export default function ItaDashboard() {
                     onClick={() => handleOitChange(ind.code)}
                     className={`w-full text-left flex items-center justify-between p-3.5 rounded-xl transition-all duration-300 cursor-pointer ${
                       isSelected
-                        ? "bg-linear-to-r from-blue-500/10 to-teal-500/10 border-l-4 border-blue-500 text-blue-700 dark:text-blue-400 font-bold"
+                        ? "bg-linear-to-r from-orange-500/10 to-emerald-500/10 border-l-4 border-orange-500 text-orange-700 dark:text-orange-400 font-bold"
                         : "text-slate-600 dark:text-zinc-400 hover:bg-slate-100/50 dark:hover:bg-zinc-800/50 hover:text-slate-800"
                     }`}
                   >
@@ -685,11 +736,11 @@ export default function ItaDashboard() {
                 className="bg-white/80 dark:bg-zinc-900/80 border border-slate-200 dark:border-zinc-800 backdrop-blur-xl rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden"
               >
                 {/* Visual Accent */}
-                <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-blue-500 via-teal-400 to-indigo-600" />
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-orange-500 via-emerald-400 to-orange-600" />
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 mb-8 border-b border-zinc-200 dark:border-zinc-800">
                   <div>
-                    <span className="px-3 py-1 text-[10px] font-black bg-blue-100 text-blue-600 rounded-full dark:bg-blue-900/30 dark:text-blue-400 uppercase tracking-widest">
+                    <span className="px-3 py-1 text-[10px] font-black bg-orange-100 text-orange-600 rounded-full dark:bg-orange-900/30 dark:text-orange-400 uppercase tracking-widest">
                       ช่องกรอกข้อมูล ITA {selectedYear}
                     </span>
                     <h2 className="text-2xl font-black text-slate-800 dark:text-white mt-2">
@@ -698,7 +749,7 @@ export default function ItaDashboard() {
                   </div>
 
                   <Link href="/ITA" target="_blank">
-                    <button className="flex items-center gap-2 px-4 py-2 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-blue-500 hover:border-blue-500/30 rounded-xl text-xs font-bold transition-all cursor-pointer">
+                    <button className="flex items-center gap-2 px-4 py-2 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-orange-500 hover:border-orange-500/30 rounded-xl text-xs font-bold transition-all cursor-pointer">
                       ดูหน้าแสดงผลจริง <ExternalLink size={12} />
                     </button>
                   </Link>
@@ -706,8 +757,8 @@ export default function ItaDashboard() {
 
                 {/* Dynamic Guidelines Overlay to help admins */}
                 {activeIndDetails?.guideline && (
-                  <div className="bg-blue-50/50 dark:bg-zinc-950/40 border-l-4 border-blue-500 p-4 rounded-r-2xl mb-8">
-                    <h4 className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1.5">
+                  <div className="bg-orange-50/30 dark:bg-orange-950/10 border-l-4 border-orange-500 p-4 rounded-r-2xl mb-8">
+                    <h4 className="text-[10px] font-black text-orange-600 dark:text-orange-400 uppercase tracking-wider mb-1.5">
                       องค์ประกอบที่ต้องแสดง (Official Guidelines):
                     </h4>
                     <div className="text-xs text-zinc-600 dark:text-zinc-400 font-semibold space-y-1 whitespace-pre-line">
@@ -757,7 +808,7 @@ export default function ItaDashboard() {
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="เช่น O1 โครงสร้าง"
-                      className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-zinc-900 dark:text-white font-bold focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+                      className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-zinc-900 dark:text-white font-bold focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition-all"
                     />
                   </div>
 
@@ -771,7 +822,7 @@ export default function ItaDashboard() {
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       placeholder="ระบุข้อกำหนด หรือแนวปฏิบัติในการแสดงข้อมูลเพื่อรับการประเมิน..."
-                      className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-zinc-900 dark:text-white font-bold focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all resize-y"
+                      className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-zinc-900 dark:text-white font-bold focus:ring-2 focus:ring-orange-500/20 focus:outline-none transition-all resize-y"
                     />
                   </div>
 
@@ -808,7 +859,7 @@ export default function ItaDashboard() {
                         <button
                           type="button"
                           onClick={handleAddLink}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-xl text-[11px] font-black transition-all dark:bg-blue-900/30 dark:text-blue-400 cursor-pointer"
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-xl text-[11px] font-black transition-all dark:bg-emerald-900/30 dark:text-emerald-400 cursor-pointer"
                         >
                           <Plus size={12} /> เพิ่มช่องลิงก์
                         </button>
@@ -864,11 +915,24 @@ export default function ItaDashboard() {
                   </div>
 
                   {/* Actions buttons */}
-                  <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800 flex justify-end gap-4">
+                  <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800 flex justify-end items-center gap-4">
+                    {/* ปุ่มลบข้อมูลทั้งหมดหัวข้อนี้ */}
+                    {dbItems.some((item) => item.oitCode === selectedOit) && (
+                      <button
+                        type="button"
+                        onClick={handleClearData}
+                        disabled={isSaving}
+                        className="px-6 py-4 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-black text-sm rounded-2xl border border-rose-500/20 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 active:scale-95 mr-auto"
+                        title={`ล้างข้อมูลของ ${selectedOit}`}
+                      >
+                        <Trash2 size={16} /> ลบข้อมูลหัวข้อนี้
+                      </button>
+                    )}
+
                     <button
                       type="submit"
                       disabled={isSaving}
-                      className="px-8 py-4 bg-linear-to-r from-blue-600 to-teal-500 text-white font-black text-sm rounded-2xl shadow-lg shadow-blue-500/20 hover:from-blue-700 hover:to-teal-600 active:scale-95 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                      className="px-8 py-4 bg-linear-to-r from-orange-600 to-emerald-500 text-white font-black text-sm rounded-2xl shadow-lg shadow-orange-500/20 hover:from-orange-700 hover:to-emerald-600 active:scale-95 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
                     >
                       {isSaving ? (
                         <>
@@ -920,7 +984,7 @@ export default function ItaDashboard() {
                   value={newYearInput}
                   onChange={(e) => setNewYearInput(e.target.value.replace(/\D/g, ""))}
                   placeholder="เช่น 2570"
-                  className="w-full bg-slate-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3.5 text-sm text-zinc-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-slate-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3.5 text-sm text-zinc-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
 
                 <div className="flex gap-3 justify-end pt-2">
@@ -937,7 +1001,7 @@ export default function ItaDashboard() {
                   <button
                     type="submit"
                     disabled={isAddingYear}
-                    className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black transition-all cursor-pointer disabled:opacity-50"
+                    className="px-5 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-black transition-all cursor-pointer disabled:opacity-50"
                   >
                     {isAddingYear ? "กำลังเพิ่ม..." : "เพิ่มปีงบประมาณ"}
                   </button>

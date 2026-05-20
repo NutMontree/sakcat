@@ -39,7 +39,7 @@
   /* กำหนดสีที่ใช้ในโปรเจกต์ */
   --color-primary: #3b82f6;      /* สีหลัก (สีฟ้า) */
   --color-dark: #111827;         /* สีเข้มสำหรับ Text (Gray-900) */
-  --color-dark-6: #171717;       /* สีพื้นหลังสำหรับ Dark Mode */
+  --color-dark-6: #0b0f19;       /* สีพื้นหลังสำหรับ Dark Mode (Deep Slate Dark) */
   --color-body-color: #6b7280;   /* สีตัวอักษรทั่วไป (Gray-500) */
   --color-white: #ffffff;        /* สีขาว */
   --color-secondary: #9353d3;
@@ -79,7 +79,7 @@
 
   body {
     color: var(--color-dark) !important;
-    background-color: var(--color-white);
+    background-color: var(--background) !important; /* ใช้สีพื้นหลัง Slate-50 จาก globals.css */
     line-height: 1.5;
     margin: 0;
   }

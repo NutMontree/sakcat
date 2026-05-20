@@ -28,7 +28,7 @@ const CleanHeader = ({ selectedYear, years, setSelectedYear }: any) => {
       <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         {/* Left: Branding */}
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm shrink-0">
+          <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-orange-600 dark:bg-orange-500 text-white shadow-sm shrink-0">
             <SafetyCertificateOutlined style={{ fontSize: "20px" }} />
           </div>
           <div>
@@ -50,7 +50,7 @@ const CleanHeader = ({ selectedYear, years, setSelectedYear }: any) => {
                 onClick={() => setSelectedYear(year)}
                 className={`px-4 py-1.5 rounded-md text-xs font-black transition-all cursor-pointer ${
                   selectedYear === year
-                    ? "bg-white dark:bg-zinc-800 text-blue-600 dark:text-white shadow-xs border border-slate-200/80 dark:border-zinc-700"
+                    ? "bg-white dark:bg-zinc-800 text-orange-600 dark:text-white shadow-xs border border-slate-200/80 dark:border-zinc-700"
                     : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                 }`}
               >
@@ -73,9 +73,13 @@ const IndicatorItem = ({ item, dbItems, onViewImage }: { item: any; dbItems: any
   const hasData = useMemo(() => {
     if (!dbEntry) return false;
     const hasLinks = Array.isArray(dbEntry.links) && dbEntry.links.length > 0;
-    const hasDesc = typeof dbEntry.description === "string" && dbEntry.description.trim().length > 0;
+    
+    // ตรวจสอบว่าคำอธิบายแตกต่างจากคำอธิบายแนะนำของดัชนี และไม่เป็นช่องว่างเปล่า
+    const hasDesc = typeof dbEntry.description === "string" && 
+                    dbEntry.description.trim().length > 0 && 
+                    dbEntry.description.trim() !== item.note?.trim();
     return hasLinks || hasDesc;
-  }, [dbEntry]);
+  }, [dbEntry, item]);
 
   return (
     <div className="py-3">
@@ -112,9 +116,9 @@ const IndicatorItem = ({ item, dbItems, onViewImage }: { item: any; dbItems: any
           
           {/* Detailed Guidelines & Responsibility (100% Matching photos) */}
           {item.guideline && (
-            <div className="bg-blue-50/40 dark:bg-zinc-900/40 border-l-4 border-blue-500 p-4 rounded-r-xl space-y-3">
+            <div className="bg-orange-50/30 dark:bg-orange-950/10 border-l-4 border-orange-500 p-4 rounded-r-xl space-y-3">
               <div>
-                <h4 className="text-[11px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1.5">
+                <h4 className="text-[11px] font-black text-orange-600 dark:text-orange-400 uppercase tracking-wider mb-1.5">
                   องค์ประกอบที่ต้องแสดง (Official Guidelines):
                 </h4>
                 <div className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed space-y-1">
@@ -167,7 +171,7 @@ const IndicatorItem = ({ item, dbItems, onViewImage }: { item: any; dbItems: any
                           <div
                             key={idx}
                             onClick={() => onViewImage(link.url, link.name)}
-                            className="group relative cursor-pointer overflow-hidden rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3 p-2.5 hover:border-blue-500/40 dark:hover:border-blue-500/30"
+                            className="group relative cursor-pointer overflow-hidden rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs hover:shadow-md transition-all duration-300 flex items-center gap-3 p-2.5 hover:border-emerald-500/40 dark:hover:border-emerald-500/30"
                           >
                             <div className="relative h-12 w-16 shrink-0 rounded-lg overflow-hidden bg-slate-100 dark:bg-zinc-800 border border-slate-150 dark:border-zinc-800">
                               <img
@@ -180,7 +184,7 @@ const IndicatorItem = ({ item, dbItems, onViewImage }: { item: any; dbItems: any
                               </div>
                             </div>
                             <div className="min-w-0 flex-1">
-                              <span className="text-xs font-bold text-slate-800 dark:text-zinc-200 block truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                              <span className="text-xs font-bold text-slate-800 dark:text-zinc-200 block truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                                 {link.name}
                               </span>
                               <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider block mt-0.5">
@@ -197,7 +201,7 @@ const IndicatorItem = ({ item, dbItems, onViewImage }: { item: any; dbItems: any
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2.5 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-bold hover:underline transition-all py-3 px-4 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200/80 dark:border-zinc-800 w-full hover:border-blue-500/20 hover:shadow-xs"
+                          className="inline-flex items-center gap-2.5 text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 font-bold hover:underline transition-all py-3 px-4 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200/80 dark:border-zinc-800 w-full hover:border-emerald-500/20 hover:shadow-xs"
                         >
                           <span className="text-sm shrink-0">{isPdf ? "📄" : "🔗"}</span>
                           <span className="truncate text-xs">{link.name}</span>
@@ -227,11 +231,11 @@ const CategorySection = ({ group, dbItems, onViewImage }: { group: any; dbItems:
     <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl shadow-xs overflow-hidden mb-6">
       {/* Header bar */}
       <div className="bg-slate-50 dark:bg-zinc-800/30 px-6 py-4 border-b border-slate-200 dark:border-zinc-800 flex items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white font-black text-xs">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-600 dark:bg-orange-500 text-white font-black text-xs">
           {group.id}
         </div>
         <div>
-          <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest block">
+          <span className="text-[10px] font-black text-orange-600 dark:text-orange-400 uppercase tracking-widest block">
             {group.title}
           </span>
           <h3 className="text-base font-black text-slate-900 dark:text-white mt-0.5">
@@ -826,13 +830,13 @@ export default function ITA() {
   }, [selectedYear]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 font-sans selection:bg-blue-500/20 text-slate-800 dark:text-slate-200">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 font-sans selection:bg-orange-500/20 text-slate-800 dark:text-slate-200">
       <CleanHeader selectedYear={selectedYear} years={years} setSelectedYear={setSelectedYear} />
 
       <div className="max-w-4xl mx-auto px-4 py-12">
         {/* Main Title Section */}
         <div className="text-center mb-10">
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 text-xs font-bold border border-blue-100 dark:border-blue-900/40 mb-4">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-400 text-xs font-bold border border-orange-100 dark:border-orange-900/40 mb-4">
             <BookOutlined /> ITA Online Portal
           </span>
           <h2 className="text-2xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight mb-2">
