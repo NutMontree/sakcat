@@ -440,6 +440,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
                       fill
                       priority={index < 4}
                       className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                      unoptimized
                     />
                   )}
                   {/* Gradient overlay */}
@@ -474,6 +475,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
                             alt={authorName}
                             fill
                             className="object-cover"
+                            unoptimized
                           />
                         </div>
                       ) : (
@@ -569,6 +571,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
                       fill
                       priority={index < 4}
                       className="object-cover object-top"
+                      unoptimized
                     />
                   )}
                 </div>
@@ -596,6 +599,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
                           alt={authorName}
                           fill
                           className="object-cover"
+                          unoptimized
                         />
                       </div>
                     ) : (

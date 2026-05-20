@@ -56,7 +56,11 @@ export default function RegisterPage() {
         setSuccess(true);
         setTimeout(() => router.push("/login"), 1500);
       } else {
-        setErrorMsg(data.error || "ไม่สามารถลงทะเบียนได้");
+        setErrorMsg(
+          data.details 
+            ? `${data.error} (รายละเอียด: ${data.details})` 
+            : (data.error || "ไม่สามารถลงทะเบียนได้")
+        );
       }
     } catch (error) {
       setErrorMsg("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");

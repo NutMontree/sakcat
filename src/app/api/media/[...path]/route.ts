@@ -7,35 +7,20 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request, { params }: { params: Promise<{ path: string[] }> }) {
   try {
     const { path: pathSegments } = await params;
-
     const localBase = join(process.cwd(), "public");
-    const networkBase = "\\\\192.168.6.118\\public";
-    const mappedBase = "Z:\\"; // ใช้ Z:\ เพื่อให้เป็น Absolute Path ที่ถูกต้องบน Windows
 
-    // 1. ลองหาที่ไดรฟ์ Z: (Lenovo) เป็นอันดับแรก
-    let filePath = join(mappedBase, ...pathSegments);
-    let found = existsSync(filePath);
+    let filePath = "";
+    let found = false;
 
-    // 2. ถ้าในเครื่องไม่มี ให้ลองหาที่ Network UNC
-    if (!found) {
-      const networkPath = join(networkBase, ...pathSegments);
-      if (existsSync(networkPath)) {
-        filePath = networkPath;
-        found = true;
-      }
-    }
-
-    // 3. สุดท้ายถ้ายังไม่เจออีก ให้ลองหาที่ Local (เผื่อเป็นไฟล์เก่าหรือไฟล์ระบบ)
-    if (!found) {
-      const localPath = join(localBase, ...pathSegments);
-      if (existsSync(localPath)) {
-        filePath = localPath;
-        found = true;
-      }
+    // 1. ค้นหาไฟล์จากโฟลเดอร์ Local public เท่านั้น
+    const localPath = join(localBase, ...pathSegments);
+    if (existsSync(localPath)) {
+      filePath = localPath;
+      found = true;
     }
 
     if (!found) {
-      // 4. Fallback สำหรับเครื่อง Local (Dev): ถ้าหาไฟล์ไม่เจอ ให้ลองดึงจาก Server จริง (Production) มาแสดง
+      // 2. Fallback สำหรับเครื่อง Local (Dev): ถ้าหาไฟล์ไม่เจอ ให้ลองดึงจาก Server จริง (Production) มาแสดง
       if (process.env.NODE_ENV === "development") {
         try {
           const prodUrl = `https://sakcat.vercel.app/api/media/${pathSegments.join("/")}`;
@@ -75,11 +60,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ path: st
         }
       }
 
-      console.log(`❌ Media Not Found [${new Date().toLocaleString()}]:`);
-      console.log(`   - Requested: ${pathSegments.join("/")}`);
-      console.log(`   - Attempted Local: ${join(localBase, ...pathSegments)}`);
-      console.log(`   - Attempted Network: ${join(networkBase, ...pathSegments)}`);
-      console.log(`   - Attempted Mapped (Z:): ${join(mappedBase, ...pathSegments)}`);
+      console.log(`❌ Media Not Found [${new Date().toLocaleString()}]: ${pathSegments.join("/")}`);
       return new NextResponse("File not found", { status: 404 });
     }
 
@@ -87,11 +68,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ path: st
 
     // Security check: ensure the file is within allowed directories
     const normalizedPath = filePath.toLowerCase();
-    const isAllowed =
-      normalizedPath.startsWith(localBase.toLowerCase()) ||
-      normalizedPath.startsWith(networkBase.toLowerCase()) ||
-      normalizedPath.startsWith(mappedBase.toLowerCase()) ||
-      normalizedPath.startsWith("\\\\192.168.6.118");
+    const isAllowed = normalizedPath.startsWith(localBase.toLowerCase());
 
     if (!isAllowed) {
       return new NextResponse("Forbidden", { status: 403 });
@@ -111,8 +88,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ path: st
       webp: "image/webp",
       svg: "image/svg+xml",
       pdf: "application/pdf",
-      blob: "image/jpeg", // Fallback for the .blob files I saw
-      // Video types
+      blob: "image/jpeg",
       mp4: "video/mp4",
       webm: "video/webm",
       mov: "video/quicktime",

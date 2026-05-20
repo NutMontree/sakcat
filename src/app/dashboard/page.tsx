@@ -207,32 +207,17 @@ export default function DashboardLoader() {
             <div>
               <motion.div variants={item} className="mb-8 flex flex-col gap-1">
                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400 flex items-center gap-4">
-                  ข้อมูลโครงสร้างพื้นฐานระบบ (Telemetry)
+                  ข้อมูลการใช้งานทรัพยากรระบบ (System Statistics)
                   <span className="h-px bg-blue-500/10 flex-1" />
                 </h2>
                 <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                  ตรวจสอบสถานะเซิร์ฟเวอร์และการใช้งานทรัพยากรแบบเรียลไทม์
+                  ตรวจสอบสถิติข้อมูลและการใช้งานพื้นที่เก็บข้อมูลของระบบแบบเรียลไทม์
                 </span>
               </motion.div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 {/* Status Dashboard */}
                 <div className="md:col-span-8 grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  <TelemetryCard
-                    label="ภาระการประมวลผล (CPU)"
-                    value={stats.cpuUsage}
-                    unit="%"
-                    icon={Database}
-                    color="blue"
-                  />
-                  <TelemetryCard
-                    label="หน่วยความจำ (RAM)"
-                    value={stats.ramUsage.percent}
-                    unit="%"
-                    subValue={`ใช้งาน ${(stats.ramUsage.used / 1024).toFixed(1)} จาก ${(stats.ramUsage.total / 1024).toFixed(1)} GB`}
-                    icon={HardDrive}
-                    color="purple"
-                  />
                   <StatCard
                     label="User ในระบบ"
                     value={stats.totalUsers}
@@ -303,7 +288,7 @@ export default function DashboardLoader() {
                 {/* Usage Cards */}
                 <div className="md:col-span-4 flex flex-col gap-4">
                   <UsageCard
-                    title="MongoDB"
+                    title="Database MongoDB"
                     value={stats.dbSizeMB}
                     max={stats.dbLimitMB}
                     unit="MB"
@@ -311,19 +296,16 @@ export default function DashboardLoader() {
                     color="emerald"
                     variants={item}
                     isSuperAdmin={session?.user?.role === "super_admin"}
-                    serverTotalMB={stats.serverTotalMB}
-                    serverUsedMB={stats.serverUsedMB}
-                    serverAvailableMB={stats.serverAvailableMB}
                     onEdit={() => {
                       const currentGB =
-                        stats.dbLimitMB === 0 ? "0" : (stats.dbLimitMB / 1024).toFixed(1);
+                        stats.dbLimitMB === 0 ? "0.5" : (stats.dbLimitMB / 1024).toFixed(1);
                       setEditingQuotaKey("db_limit_mb");
                       setTempQuota(currentGB);
                       setIsEditingQuota(true);
                     }}
                   />
                   <UsageCard
-                    title="Storage & Drive"
+                    title="Storage & Drive (Cloudinary)"
                     value={stats.cloudUsageMB}
                     max={stats.cloudLimitMB}
                     unit="MB"
@@ -331,13 +313,10 @@ export default function DashboardLoader() {
                     color="blue"
                     variants={item}
                     isSuperAdmin={session?.user?.role === "super_admin"}
-                    serverTotalMB={stats.serverTotalMB}
-                    serverUsedMB={stats.serverUsedMB}
-                    serverAvailableMB={stats.serverAvailableMB}
                     onEdit={() => {
                       // Convert MB to GB for display in modal
                       const currentGB =
-                        stats.cloudLimitMB === 0 ? "0" : (stats.cloudLimitMB / 1024).toFixed(1);
+                        stats.cloudLimitMB === 0 ? "20" : (stats.cloudLimitMB / 1024).toFixed(1);
                       setEditingQuotaKey("storage_limit_mb");
                       setTempQuota(currentGB);
                       setIsEditingQuota(true);
@@ -827,42 +806,6 @@ export default function DashboardLoader() {
 
 // --- Premium Sub-Components ---
 
-function TelemetryCard({ label, value, unit, subValue, icon: Icon, color }: any) {
-  return (
-    <div className="relative group p-6 rounded-4xl bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-none transition-all duration-500 hover:-translate-y-1 overflow-hidden">
-      <div
-        className={`absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity ${color === "blue" ? "text-blue-500" : "text-purple-500"}`}
-      >
-        <Icon size={80} strokeWidth={1} />
-      </div>
-      <div className="relative z-10">
-        <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400 dark:text-zinc-500 mb-3">
-          {label}
-        </p>
-        <div className="flex items-baseline gap-2">
-          <h3 className="text-4xl font-black text-zinc-900 dark:text-white tracking-tighter">
-            {value}
-          </h3>
-          <span className="text-xs font-bold text-zinc-500 uppercase">{unit}</span>
-        </div>
-        {subValue && (
-          <p className="text-[9px] font-bold text-zinc-500 dark:text-zinc-400 mt-2 bg-zinc-100 dark:bg-zinc-900/50 w-fit px-2 py-0.5 rounded-lg border border-zinc-200 dark:border-zinc-800 uppercase tracking-tight">
-            {subValue}
-          </p>
-        )}
-        <div className="mt-5 h-1.5 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${Math.min(value, 100)}%` }}
-            transition={{ duration: 2, ease: "circOut" }}
-            className={`h-full ${color === "blue" ? "bg-blue-500 shadow-blue-500/50" : "bg-purple-500 shadow-purple-500/50"} rounded-full shadow-[0_0_15px]`}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function StatCard({ label, value, icon: Icon, color, unit, variants }: any) {
   const colors: any = {
     blue: "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20",
@@ -926,18 +869,21 @@ function UsageCard({
   variants,
   isSuperAdmin,
   onEdit,
-  serverTotalMB = 0,
-  serverUsedMB = 0,
-  serverAvailableMB = 0,
 }: any) {
   const isUnlimited = max <= 0;
-  const displayValue = isUnlimited ? serverUsedMB : value;
-  const effectiveMax = isUnlimited ? serverTotalMB || 1 : max;
-  const percentage = Math.min((parseFloat(displayValue) / effectiveMax) * 100, 100);
+  // If unlimited, use virtual capacity for the progress bar (512MB for Mongo, 25GB/25600MB for Cloudinary)
+  const virtualMax = title.toLowerCase().includes("mongo") ? 512 : 25600;
+  const effectiveMax = isUnlimited ? virtualMax : max;
+  const percentage = Math.min((parseFloat(value) / effectiveMax) * 100, 100);
   const colorClass =
     color === "emerald" ? "bg-emerald-500 shadow-emerald-500/50" : "bg-blue-600 shadow-blue-600/50";
   const iconColor = color === "emerald" ? "text-emerald-500" : "text-blue-500";
   const bgColor = color === "emerald" ? "bg-emerald-500/10" : "bg-blue-500/10";
+
+  // Calculate remaining space
+  const remainingMB = Math.max(effectiveMax - parseFloat(value), 0);
+  const remainingStr =
+    remainingMB >= 1024 ? `${(remainingMB / 1024).toFixed(2)} GB` : `${remainingMB.toFixed(2)} MB`;
 
   return (
     <motion.div
@@ -962,13 +908,13 @@ function UsageCard({
             {isSuperAdmin && onEdit && (
               <button
                 onClick={onEdit}
-                className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-blue-500 hover:border-blue-500/50 transition-all"
+                className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-blue-500 hover:border-blue-500/50 transition-all cursor-pointer"
               >
                 <Settings size={14} />
               </button>
             )}
             <div className={`px-3 py-1 rounded-full ${bgColor} ${iconColor} text-xs font-black`}>
-              {percentage.toFixed(1)}%
+              เหลือ {remainingStr}
             </div>
           </div>
         </div>
@@ -984,16 +930,9 @@ function UsageCard({
           </div>
           <div className="space-y-1.5">
             <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 uppercase tracking-widest leading-relaxed">
-              {isUnlimited
-                ? `การใช้งานระบบ: ${(serverUsedMB / 1024).toFixed(1)}GB จากทั้งหมด ${(serverTotalMB / 1024).toFixed(1)}GB`
-                : `การจัดสรรโควตา: ${((parseFloat(value) / max) * 100).toFixed(1)}% ของความจุ ${(max / 1024).toFixed(1)}GB`}
+              การจัดสรรโควตา: {percentage.toFixed(1)}% ของความจุ {(effectiveMax / 1024).toFixed(1)}
+              GB
             </p>
-            {/* <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-              <p className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">
-                พื้นที่ว่างในเซิร์ฟเวอร์: {(serverAvailableMB / 1024).toFixed(2)} GB
-              </p>
-            </div> */}
           </div>
         </div>
 

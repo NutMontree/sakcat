@@ -73,19 +73,20 @@ export async function GET() {
     const totalImagesCount = (newsImageStats.length > 0 ? newsImageStats[0].total : 0) + driveImageCount;
 
     // 3. Infrastructure Usage (MongoDB)
-    const dbStats = await db.stats();
-    const dbSizeMB = (dbStats.storageSize / (1024 * 1024)).toFixed(2);
+    let dbSizeMB = "0.00";
+    try {
+      const dbStats = await db.stats();
+      dbSizeMB = ((dbStats.storageSize || dbStats.dataSize || 0) / (1024 * 1024)).toFixed(2);
+    } catch (dbStatsErr: any) {
+      console.error("Failed to get DB stats:", dbStatsErr.message);
+    }
     
-    // 4. Local Storage & DB Quotas
+    // 4. Storage & DB Quotas
     let storageUsageMB = "0.00";
-    let storageLimitMB = 20000; // Default fallback
-    let dbLimitMB = 0; // Default unlimited for DB
-    let serverTotalMB = 0; // Real disk capacity
-    let serverUsedMB = 0;
-    let serverAvailableMB = 0;
-    let cpuUsage = "0";
-    let ramUsage = { total: 0, used: 0, percent: 0 };
-    
+    let storageLimitMB = 25600; // Default fallback (25GB for Cloudinary Free Tier)
+    let dbLimitMB = 512; // Default 512MB for MongoDB Atlas Free Tier
+    let loadedFromCloudinary = false;
+
     try {
       // Fetch custom limits from database
       const [storageLimit, dbLimit] = await Promise.all([
@@ -95,147 +96,89 @@ export async function GET() {
 
       if (storageLimit) {
         storageLimitMB = parseFloat(storageLimit.value);
-        if (isNaN(storageLimitMB)) storageLimitMB = 20000;
+        if (isNaN(storageLimitMB)) storageLimitMB = 25600;
+      } else {
+        storageLimitMB = 25600;
       }
 
       if (dbLimit) {
         dbLimitMB = parseFloat(dbLimit.value);
-        if (isNaN(dbLimitMB)) dbLimitMB = 0;
+        if (isNaN(dbLimitMB)) dbLimitMB = 512;
+      } else {
+        dbLimitMB = 512;
       }
 
-      // Calculate size of all relevant folders
-      const fs = require("fs");
-      let publicDir = path.join(process.cwd(), "public"); // ค่าเริ่มต้นสำหรับเครื่องที่รันเอง (Lenovo)
-      
-      // ถ้าหาโฟลเดอร์ public ในเครื่องไม่เจอ (แสดงว่ารันอยู่บน PC) ให้ลองไปหาที่ Lenovo
-      if (!fs.existsSync(path.join(publicDir, "uploads"))) {
-        const networkPath = "\\\\192.168.6.118\\public";
-        if (fs.existsSync(networkPath)) {
-          publicDir = networkPath;
-        } else if (fs.existsSync("Z:")) {
-          publicDir = "Z:";
-        }
-      }
+      // Fetch Cloudinary usage directly from API
+      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+      const apiKey = process.env.CLOUDINARY_API_KEY || process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY;
+      const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
-      const foldersToMeasure = ["uploads", "images", "pdf", "sakcat_drive", "attendance_photos"];
-      let totalBytes = 0;
-
-      if (!fs.existsSync(publicDir)) {
-        console.warn(`⚠️ UNC Path ${publicDir} not accessible, trying Z: drive...`);
-        publicDir = "Z:";
-      }
-
-      const getDirSize = (dirPath: string) => {
-        let size = 0;
+      if (cloudName && apiKey && apiSecret) {
         try {
-          if (!fs.existsSync(dirPath)) {
-            console.log(`❌ Folder not found: ${dirPath}`);
-            return 0;
-          }
-          const files = fs.readdirSync(dirPath);
-          for (let i = 0; i < files.length; i++) {
-            const filePath = path.join(dirPath, files[i]);
-            const stats = fs.statSync(filePath);
-            if (stats.isDirectory()) {
-              size += getDirSize(filePath);
-            } else {
-              size += stats.size;
-            }
-          }
-        } catch (e: any) {
-          console.error(`Error reading ${dirPath}:`, e.message);
-        }
-        return size;
-      };
-
-      foldersToMeasure.forEach((folder) => {
-        const folderPath = path.join(publicDir, folder);
-        const folderSize = getDirSize(folderPath);
-        console.log(`📁 Folder ${folder}: ${(folderSize / (1024 * 1024)).toFixed(2)} MB`);
-        totalBytes += folderSize;
-      });
-      
-      storageUsageMB = (totalBytes / (1024 * 1024)).toFixed(2);
-
-      // 4. Get real disk stats and Lenovo Host Info
-      try {
-        const os = require("os");
-        const fs = require("fs");
-
-        // 4.1 Get Disk Stats (UNC Path or Z:)
-        if (fs.statfsSync) {
-          try {
-            const stats = fs.statfsSync(publicDir);
-            serverTotalMB = Math.round((stats.blocks * stats.bsize) / (1024 * 1024));
-            serverAvailableMB = Math.round((stats.bfree * stats.bsize) / (1024 * 1024));
-            serverUsedMB = serverTotalMB - serverAvailableMB;
-          } catch (e) {
-            try {
-              const stats = fs.statfsSync("Z:");
-              serverTotalMB = Math.round((stats.blocks * stats.bsize) / (1024 * 1024));
-              serverAvailableMB = Math.round((stats.bfree * stats.bsize) / (1024 * 1024));
-              serverUsedMB = serverTotalMB - serverAvailableMB;
-            } catch (zErr) {
-              console.warn("Disk stats failed for both UNC and Z:");
-            }
-          }
-        }
-
-        // 4.2 Get CPU & RAM stats
-        const isLocal = publicDir === path.join(process.cwd(), "public");
-
-        if (isLocal) {
-          // --- รันบนเครื่อง Lenovo โดยตรง (ใช้ค่า Real-time จาก OS) ---
-          const totalMem = os.totalmem();
-          const freeMem = os.freemem();
-          ramUsage = {
-            total: Math.round(totalMem / (1024 * 1024)),
-            used: Math.round((totalMem - freeMem) / (1024 * 1024)),
-            percent: Math.round(((totalMem - freeMem) / totalMem) * 100),
-          };
-
-          const cpus = os.cpus();
-          let totalIdle = 0, totalTick = 0;
-          cpus.forEach((cpu: any) => {
-            for (let type in cpu.times) totalTick += cpu.times[type];
-            totalIdle += cpu.times.idle;
+          const authHeader = Buffer.from(`${apiKey}:${apiSecret}`).toString("base64");
+          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/usage`, {
+            headers: {
+              Authorization: `Basic ${authHeader}`,
+            },
+            next: { revalidate: 60 } // cache for 1 minute
           });
-          cpuUsage = (100 - Math.round((totalIdle / totalTick) * 100)).toString();
-        } else {
-          // --- รันบน PC (ดึงข้อมูลพื้นฐานจาก MongoDB) ---
-          try {
-            const adminDb = db.admin();
-            const hostInfo = await adminDb.command({ hostInfo: 1 });
-            ramUsage = {
-              total: hostInfo.extra.memSizeMB || 0,
-              used: 0,
-              percent: 0,
-            };
-            // แสดงเลข 1 เพื่อให้เข็มไมล์ขยับ (แทนสถานะเชื่อมต่อได้)
-            cpuUsage = "1"; 
-          } catch (mongoErr: any) {
-            if (mongoErr.code === 13 || mongoErr.message?.includes("not authorized")) {
-              console.warn("⚠️ MongoDB user is not authorized on admin db for hostInfo (falling back to OS stats)");
-            } else {
-              console.error("MongoDB HostInfo Error:", mongoErr);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.storage) {
+              storageUsageMB = (data.storage.usage / (1024 * 1024)).toFixed(2);
+              
+              const fetchedLimit = Math.round(data.storage.limit / (1024 * 1024));
+              if (fetchedLimit > 0) {
+                storageLimitMB = fetchedLimit;
+              } else {
+                console.log(`☁️ Cloudinary returned 0 limit (Credit Plan). Keeping resolved limit: ${storageLimitMB} MB`);
+              }
+              loadedFromCloudinary = true;
+              console.log(`☁️ Cloudinary stats loaded successfully: ${storageUsageMB} MB / ${storageLimitMB} MB`);
             }
-            ramUsage = {
-              total: Math.round(os.totalmem() / (1024 * 1024)),
-              used: Math.round((os.totalmem() - os.freemem()) / (1024 * 1024)),
-              percent: Math.round(((os.totalmem() - os.freemem()) / os.totalmem()) * 100),
-            };
-            
-            const cpus = os.cpus();
-            let totalIdle = 0, totalTick = 0;
-            cpus.forEach((cpu: any) => {
-              for (let type in cpu.times) totalTick += cpu.times[type];
-              totalIdle += cpu.times.idle;
-            });
-            cpuUsage = (100 - Math.round((totalIdle / totalTick) * 100)).toString();
+          } else {
+            console.warn("Cloudinary usage API status:", res.status);
           }
+        } catch (cloudinaryErr: any) {
+          console.error("Cloudinary usage API error:", cloudinaryErr.message);
         }
-      } catch (infraErr) {
-        console.error("Infrastructure Check Error:", infraErr);
+      }
+
+      // If Cloudinary failed or was not configured, fallback to measuring local folders
+      if (!loadedFromCloudinary) {
+        const fs = require("fs");
+        const foldersToMeasure = ["uploads", "images", "pdf", "sakcat_drive", "attendance_photos"];
+        let totalBytes = 0;
+
+        const getDirSize = (dirPath: string) => {
+          let size = 0;
+          try {
+            if (!fs.existsSync(dirPath)) {
+              return 0;
+            }
+            const files = fs.readdirSync(dirPath);
+            for (let i = 0; i < files.length; i++) {
+              const filePath = path.join(dirPath, files[i]);
+              const stats = fs.statSync(filePath);
+              if (stats.isDirectory()) {
+                size += getDirSize(filePath);
+              } else {
+                size += stats.size;
+              }
+            }
+          } catch (e: any) {
+            console.error(`Error reading ${dirPath}:`, e.message);
+          }
+          return size;
+        };
+
+        foldersToMeasure.forEach((folder) => {
+          const folderPath = path.join(process.cwd(), "public", folder);
+          const folderSize = getDirSize(folderPath);
+          totalBytes += folderSize;
+        });
+        
+        storageUsageMB = (totalBytes / (1024 * 1024)).toFixed(2);
       }
     } catch (err) {
       console.error("General Stats Calculation Error:", err);
@@ -253,11 +196,6 @@ export async function GET() {
       dbLimitMB: dbLimitMB,
       cloudUsageMB: storageUsageMB, // Keeping same key for frontend compatibility
       cloudLimitMB: storageLimitMB,
-      serverTotalMB: serverTotalMB,
-      serverUsedMB: serverUsedMB,
-      serverAvailableMB: serverAvailableMB,
-      cpuUsage: cpuUsage,
-      ramUsage: ramUsage,
       totalPendingQA,
       totalUsers,
     });
