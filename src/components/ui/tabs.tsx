@@ -105,7 +105,7 @@ export default function WelcomePage() {
               <CardBody className="group/card relative h-auto w-auto rounded-3xl border border-white/40 bg-white/60 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:shadow-blue-500/10">
                 <CardItem translateZ="30" className="mb-4">
                   <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-bold tracking-wider text-blue-600 uppercase">
-                    SAKCAT Director
+                    SSKCAT Director
                   </span>
                 </CardItem>
                 <CardItem translateZ="50" className="text-3xl font-extrabold text-slate-800">

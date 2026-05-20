@@ -1,25 +1,25 @@
-import { MetadataRoute } from 'next'
+import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'SAKCAT Admin Portal',
-    short_name: 'SAKCAT',
-    description: 'Korat Thai Logistics Employee Management Hub',
-    start_url: '/',
-    display: 'standalone',
-    background_color: '#09090b',
-    theme_color: '#3b82f6',
+    name: "วิทยาลัยเกษตรและเทคโนโลยีศรีสะเกษ",
+    short_name: "SSKCAT",
+    description: "ระบบบริหารจัดการข่าวสารและข้อมูลวิทยาลัยเกษตรและเทคโนโลยีศรีสะเกษ",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#ffffff",
+    theme_color: "#ffffff",
     icons: [
       {
-        src: '/images/favicon.ico',
-        sizes: '192x192',
-        type: 'image/x-icon',
+        src: "/images/favicon.ico",
+        sizes: "any",
+        type: "image/x-icon",
       },
       {
-        src: '/images/logo.png',
-        sizes: '512x512',
-        type: 'image/png',
+        src: "/logo.png",
+        sizes: "192x192",
+        type: "image/png",
       },
     ],
-  }
+  };
 }

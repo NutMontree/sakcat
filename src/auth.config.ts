@@ -51,6 +51,11 @@ const callbacks: NextAuthConfig["callbacks"] = {
       return true;
     }
 
+    // อนุญาตให้ทุกคนเข้าถึงระบบจัดการ ITA ได้โดยไม่ต้องเข้าสู่ระบบ
+    if (pathname.startsWith("/dashboard/ita")) {
+      return true;
+    }
+
     // รายการเส้นทางที่ต้องมีการเข้าสู่ระบบก่อน (Protected Routes)
     const protectedPrefixes = [
       "/dashboard",
@@ -90,7 +95,12 @@ const callbacks: NextAuthConfig["callbacks"] = {
       // สิทธิ์พื้นฐานอย่าง 'student' หรือ 'user' ไม่มีสิทธิ์เข้าถึงหน้าควบคุมระบบ (Dashboard/Admin) ใดๆ ทั้งสิ้น
       // ยกเว้นหน้าโปรไฟล์ (/dashboard/profile), หน้าแชท (/dashboard/chat) และหน้าสมาชิก (/dashboard/members)
       if (role === "student" || role === "user") {
-        if (!pathname.startsWith("/dashboard/profile") && !pathname.startsWith("/dashboard/chat") && !pathname.startsWith("/dashboard/members")) {
+        if (
+          !pathname.startsWith("/dashboard/profile") &&
+          !pathname.startsWith("/dashboard/chat") &&
+          !pathname.startsWith("/dashboard/members") &&
+          !pathname.startsWith("/dashboard/ita")
+        ) {
           return Response.redirect(new URL("/", nextUrl));
         }
       }

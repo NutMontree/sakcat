@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "นโยบายความเป็นส่วนตัว | SAKCAT",
+  title: "นโยบายความเป็นส่วนตัว | SSKCAT",
   description:
     "นโยบายความเป็นส่วนตัวและการคุ้มครองข้อมูลส่วนบุคคลของวิทยาลัยเกษตรและเทคโนโลยีศรีสะเกษ",
 };

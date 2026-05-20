@@ -412,11 +412,9 @@ export default function ItaDashboard() {
 
   // Trigger fetch when year changes, and reset selected OIT safely
   useEffect(() => {
-    if (status === "authenticated") {
-      setSelectedOit("O1");
-      fetchItaData(selectedYear);
-    }
-  }, [selectedYear, status]);
+    setSelectedOit("O1");
+    fetchItaData(selectedYear);
+  }, [selectedYear]);
 
   // Update form fields based on the selected OIT code and database items
   const updateFormFields = (oitCode: string, itemsList: any[]) => {
@@ -569,37 +567,11 @@ export default function ItaDashboard() {
     );
   }
 
-  const userRole = (session?.user as any)?.role?.toLowerCase();
-  const hasAccess = ["super_admin", "admin", "editor", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "teacher", "staff"].includes(userRole);
-
-  if (status === "unauthenticated" || !hasAccess) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center px-4">
-        <div className="w-20 h-20 bg-rose-50 dark:bg-rose-500/10 rounded-full flex items-center justify-center border border-rose-100 dark:border-rose-500/20 shadow-xl shadow-rose-500/10">
-          <ShieldAlert className="w-10 h-10 text-rose-500" />
-        </div>
-        <div>
-          <h2 className="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">
-            การเข้าถึงถูกจำกัด
-          </h2>
-          <p className="text-zinc-500 mt-2 font-bold max-w-md">
-            เฉพาะผู้ดูแลระบบและผู้แก้ไขเนื้อหา (Super Admin / Admin / Editor)
-            เท่านั้นที่มีสิทธิ์เข้าจัดการเมนูนี้
-          </p>
-        </div>
-        <Link href="/dashboard">
-          <button className="px-8 py-3 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-2xl font-bold transition-all shadow-md active:scale-95 cursor-pointer">
-            กลับหน้า Dashboard
-          </button>
-        </Link>
-      </div>
-    );
-  }
-
+  // Everyone is allowed to access, no role restrictions
   const user = {
-    username: session?.user?.name || (session?.user as any)?.username,
-    role: (session?.user as any)?.role,
-    image: session?.user?.image,
+    username: session?.user?.name || (session?.user as any)?.username || "Guest User",
+    role: (session?.user as any)?.role || "GUEST",
+    image: session?.user?.image || null,
   };
 
   return (

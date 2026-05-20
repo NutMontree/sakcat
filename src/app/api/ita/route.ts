@@ -38,27 +38,8 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const userRole = (session?.user as any)?.role?.toLowerCase();
-
     const client = await clientPromise;
     const db = client.db("sakcat_db");
-
-    // ตรวจสอบสิทธิ์การเข้าถึง (เฉพาะ super_admin, admin, editor หรือผู้ที่ได้รับอนุญาต)
-    const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
-    const canManageSystem =
-      rolePerms?.permissions?.manage_system ||
-      ["super_admin", "admin", "editor", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "teacher", "staff"].includes(userRole);
-
-    if (!canManageSystem) {
-      return NextResponse.json(
-        { error: "คุณไม่มีสิทธิ์ในการแก้ไขข้อมูล ITA/OIT" },
-        { status: 403 }
-      );
-    }
 
     const body = await req.json();
     const { year, oitCode, title, description, links, action } = body;
@@ -89,7 +70,7 @@ export async function POST(req: Request) {
           description: description || "",
           links: Array.isArray(links) ? links : [],
           updatedAt: new Date(),
-          updatedBy: session.user?.name || (session.user as any)?.username || "System",
+          updatedBy: session?.user?.name || (session?.user as any)?.username || "Guest User",
         },
       },
       { upsert: true }

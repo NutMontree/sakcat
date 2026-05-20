@@ -98,7 +98,7 @@ export default function WelcomePage() {
                 {/* Badge Layer (Z=30) */}
                 <CardItem translateZ="30" className="mb-4">
                   <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-bold tracking-wider text-blue-600 uppercase dark:border-blue-900/50 dark:bg-blue-900/20 dark:text-blue-300">
-                    SAKCAT Director
+                    SSKCAT Director
                   </span>
                 </CardItem>
 

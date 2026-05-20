@@ -105,7 +105,7 @@ export default function ShowYoutube() {
                       วิดีโอทั้งหมด
                     </span>
                     <span className="text-xs text-slate-400">
-                      Channel: SAKCAT Official
+                      Channel: SSKCAT Official
                     </span>
                   </div>
                 </div>

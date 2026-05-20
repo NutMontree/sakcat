@@ -12,13 +12,14 @@ import {
 
 const ExternalQualityAssurance = () => {
   return (
-    <section className="relative py-24 overflow-hidden dark:bg-transparent bg-slate-50/50">
+    // <section className="relative py-24 overflow-hidden dark:bg-transparent bg-slate-50/50">
+    <section className=" ">
       {/* Premium Background Ambient Glows */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-125 bg-linear-to-tr from-blue-500/10 to-cyan-500/5 rounded-full blur-3xl pointer-events-none opacity-70 dark:opacity-40" />
       <div className="absolute bottom-10 left-10 w-[300px] h-[300px] bg-emerald-500/5 rounded-full blur-3xl pointer-events-none opacity-50" />
 
       <div className="container mx-auto px-4 lg:px-20 relative z-10">
-        {/* --- Header Section --- */}
+        {/* --- Header Section (Commented Out as requested) ---
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -26,12 +27,10 @@ const ExternalQualityAssurance = () => {
           viewport={{ once: true }}
           className="mb-16 text-center max-w-2xl mx-auto"
         >
-          {/* Tagline Badge */}
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 text-xs font-bold border border-blue-100/50 dark:border-blue-900/30 uppercase tracking-wider mb-4">
             <CheckCircleOutlined className="text-xs" /> Accreditation & Standards
           </span>
 
-          {/* Heading */}
           <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
             การรับรองมาตรฐาน
             <span className="bg-linear-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent px-2">
@@ -40,13 +39,13 @@ const ExternalQualityAssurance = () => {
             ความโปร่งใส
           </h2>
 
-          {/* Description */}
           <p className="mt-4 text-sm md:text-base leading-relaxed text-slate-500 dark:text-zinc-400 font-medium">
             รายงานผลการประกันคุณภาพการศึกษาภายนอก และผลการประเมินคุณธรรมและความโปร่งใส (ITA){" "}
             <br className="hidden md:inline" />
             เพื่อการันตีการดำเนินงานด้วยหลักธรรมาภิบาลและความเป็นเลิศระดับสากล
           </p>
         </motion.div>
+        --- */}
 
         {/* --- Content Grid (Centered for Single Card) --- */}
         <div className="max-w-2xl mx-auto">

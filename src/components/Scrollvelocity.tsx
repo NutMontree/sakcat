@@ -71,12 +71,12 @@ export default function ScrollVelocity({
     <section className="py-10 overflow-hidden">
       <div className="pb-4">
         <ParallaxText baseVelocity={-3}>
-          {text1 || "Kantharalak Technical College SAKCAT"}
+          {text1 || "Kantharalak Technical College SSKCAT"}
         </ParallaxText>
       </div>
       <div className="pt-4 text-orange-500">
         <ParallaxText baseVelocity={3}>
-          {text2 || "Welcome to SAKCAT Official Website"}
+          {text2 || "Welcome to SSKCAT Official Website"}
         </ParallaxText>
       </div>
     </section>

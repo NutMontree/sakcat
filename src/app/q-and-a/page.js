@@ -145,7 +145,7 @@ export default function QAPage() {
                     </label>
                     <input
                       type="text"
-                      placeholder="เช่น ศิษย์เก่า SAKCAT / ผู้ปกครอง"
+                      placeholder="เช่น ศิษย์เก่า SSKCAT / ผู้ปกครอง"
                       className="w-full bg-slate-50/50 border border-slate-200 rounded-2xl p-4 font-bold outline-none focus:ring-4 focus:ring-cyan-500/5 focus:border-cyan-500 transition-all placeholder:text-slate-300"
                       required
                       value={form.guestName}

@@ -195,7 +195,7 @@ export default function MobileMenu({
                   </div>
                   <div>
                     <h2 className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-tight">
-                      SAKCAT
+                      SSKCAT
                     </h2>
                   </div>
                 </div>
@@ -250,6 +250,7 @@ export default function MobileMenu({
                     </div>
                   </div>
                 ) : (
+                  /* คอมเม้นต์ปุ่ม Login เพื่อให้แสดง/เข้าใช้งานเฉพาะ super_admin ผ่าน URL /login โดยตรง
                   <Link
                     href="/login"
                     onClick={closeMenu}
@@ -257,6 +258,8 @@ export default function MobileMenu({
                   >
                     <User className="w-5 h-5" /> Sign In to System
                   </Link>
+                  */
+                  null
                 )}
 
                 {/* รายการเมนูหลัก (Navigation Group) */}
@@ -274,8 +277,7 @@ export default function MobileMenu({
                         <Home className="w-5 h-5" /> หน้าแรก
                       </Link>
 
-                      {/* {userId && ( */}
-                      {isSuperAdmin && (
+                      {userId && (
                         <Link
                           href="/dashboard/chat"
                           onClick={closeMenu}

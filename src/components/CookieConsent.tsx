@@ -32,7 +32,7 @@ export default function CookieConsent() {
     <div
       role="dialog"
       aria-label="การยินยอมใช้คุกกี้"
-      className="fixed bottom-0 left-0 right-0 z-[9999] p-4 md:p-6 animate-in slide-in-from-bottom-4 duration-500"
+      className="fixed bottom-0 left-0 right-0 z-9999 p-4 md:p-6 animate-in slide-in-from-bottom-4 duration-500"
     >
       <div className="max-w-4xl mx-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-2xl shadow-2xl shadow-black/10 dark:shadow-black/40 p-5 md:p-6">
         <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
@@ -47,7 +47,7 @@ export default function CookieConsent() {
                 เราใช้คุกกี้เพื่อพัฒนาประสบการณ์การใช้งาน วิเคราะห์การเข้าชม
                 และให้บริการที่เหมาะสมกับคุณ{" "}
                 <span className="text-blue-600 dark:text-blue-400 font-medium">
-                  วิทยาลัยเกษตรและเทคโนโลยีศรีสะเกษ (SAKCAT)
+                  วิทยาลัยเกษตรและเทคโนโลยีศรีสะเกษ (SSKCAT)
                 </span>
               </p>
             </div>

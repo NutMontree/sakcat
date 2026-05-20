@@ -26,6 +26,7 @@ import {
   Settings,
   Newspaper,
   MessageSquare,
+  ArrowRight,
 } from "lucide-react";
 import NotificationBell from "./NotificationBell";
 
@@ -267,451 +268,445 @@ export default function NavbarClient({
             : "py-3 px-4 lg:px-6 bg-white dark:bg-zinc-950 border border-transparent"
         }`}
       >
-        <div className="flex items-center justify-between gap-4">
-          {/* --- 1. LOGO & BRANDING --- */}
-          <Link href="/" className="flex items-center gap-3 shrink-0 group outline-none">
-            <div className="relative w-10 h-10 transition-transform duration-300 group-hover:scale-105 group-active:scale-95 drop-shadow-sm">
-              {/* <Image
-                src="/images/favicon.ico"
-                alt="KTL Logo"
-                fill
-                sizes="40px"
-                priority
-                className="object-contain"
-              /> */}
-            </div>
-            <span className="text-zinc-900 dark:text-white font-black text-[22px] tracking-tighter uppercase italic drop-shadow-sm hidden sm:block">
-              {/* SAKCAT<span className="text-blue-600 dark:text-blue-500"> </span> */}
-            </span>
-          </Link>
+        {userId ? (
+          <div className="flex items-center justify-between gap-4 w-full">
+            {/* --- 1. LOGO & BRANDING --- */}
+            <Link href="/" className="flex items-center gap-3 shrink-0 group outline-none">
+              <div className="relative w-10 h-10 transition-transform duration-300 group-hover:scale-105 group-active:scale-95 drop-shadow-sm">
+                {/* <Image
+                  src="/images/favicon.ico"
+                  alt="KTL Logo"
+                  fill
+                  sizes="40px"
+                  priority
+                  className="object-contain"
+                /> */}
+              </div>
+              <span className="text-zinc-900 dark:text-white font-black text-[22px] tracking-tighter uppercase italic drop-shadow-sm hidden sm:block">
+                {/* SAKCAT<span className="text-blue-600 dark:text-blue-500"> </span> */}
+              </span>
+            </Link>
 
-          {/* --- 2. DESKTOP NAVIGATION (รายการเมนูจาก DB) --- */}
-          <div className="hidden lg:flex items-center gap-1.5 desktop-menu-container">
-            {filteredMenuTree.map((item) => {
-              const hasChildren = item.children && item.children.length > 0;
-              const isActiveNode =
-                pathname === ensureAbsolute(item.path) || activeMenuId === item._id;
+            {/* --- 2. DESKTOP NAVIGATION (รายการเมนูจาก DB) --- */}
+            <div className="hidden lg:flex items-center gap-1.5 desktop-menu-container">
+              {filteredMenuTree.map((item) => {
+                const hasChildren = item.children && item.children.length > 0;
+                const isActiveNode =
+                  pathname === ensureAbsolute(item.path) || activeMenuId === item._id;
 
-              return (
-                <div
-                  key={item._id}
-                  className="relative"
-                  onMouseEnter={() => setActiveMenuId(item._id)}
-                  onMouseLeave={() => setActiveMenuId(null)}
-                >
-                  <Link
-                    href={hasChildren ? "#" : ensureAbsolute(item.path) || "#"}
-                    className={`px-3 py-2 rounded-full flex items-center gap-1 text-[14px] font-bold transition-all whitespace-nowrap outline-none ${
-                      isActiveNode
-                        ? "text-blue-700 bg-blue-50/80 dark:text-blue-400 dark:bg-blue-500/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] dark:shadow-none"
-                        : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100/80 dark:hover:text-white dark:hover:bg-zinc-800/50"
-                    }`}
+                return (
+                  <div
+                    key={item._id}
+                    className="relative"
+                    onMouseEnter={() => setActiveMenuId(item._id)}
+                    onMouseLeave={() => setActiveMenuId(null)}
                   >
-                    <span className="px-1">{item.label}</span>
-                    {hasChildren && (
-                      <ChevronDown
-                        className={`w-4 h-4 transition-transform duration-300 ${activeMenuId === item._id ? "rotate-180 text-blue-600 dark:text-blue-400" : "opacity-40"}`}
-                      />
-                    )}
-                  </Link>
-
-                  {/* Mega Menu / Dropdown Content */}
-                  {hasChildren && (
-                    <div
-                      className={`absolute left-1/2 -translate-x-1/2 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top ${
-                        activeMenuId === item._id
-                          ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-9999"
-                          : "opacity-0 translate-y-3 scale-95 pointer-events-none"
+                    <Link
+                      href={hasChildren ? "#" : ensureAbsolute(item.path) || "#"}
+                      className={`px-3 py-2 rounded-full flex items-center gap-1 text-[14px] font-bold transition-all whitespace-nowrap outline-none ${
+                        isActiveNode
+                          ? "text-blue-700 bg-blue-50/80 dark:text-blue-400 dark:bg-blue-500/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] dark:shadow-none"
+                          : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100/80 dark:hover:text-white dark:hover:bg-zinc-800/50"
                       }`}
                     >
-                      <div className="bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] min-w-[240px] p-2 backdrop-blur-2xl ring-1 ring-black/5 dark:ring-white/5">
-                        {item.children!.map((child) => (
-                          <Link
-                            key={child._id}
-                            href={ensureAbsolute(child.path) || "#"}
-                            onClick={() => setActiveMenuId(null)}
-                            className="block px-4 py-3 text-[14px] font-semibold text-zinc-500 dark:text-zinc-400 hover:bg-blue-50/80 dark:hover:bg-blue-500/10 hover:text-blue-700 dark:hover:text-blue-400 rounded-2xl transition-all"
-                          >
-                            {child.label}
-                          </Link>
-                        ))}
-                        {/* ปุ่มติดตั้ง PWA เฉพาะในเมนู 'อื่นๆ' */}
-                        {item.label === "อื่นๆ" && deferredPrompt && (
-                          <div className="pt-1 mt-1 border-t border-zinc-100 dark:border-zinc-800/60">
-                            <button
-                              onClick={handleInstallClick}
-                              className="w-full flex items-center gap-3 px-4 py-3 text-[14px] font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
+                      <span className="px-1">{item.label}</span>
+                      {hasChildren && (
+                        <ChevronDown
+                          className={`w-4 h-4 transition-transform duration-300 ${activeMenuId === item._id ? "rotate-180 text-blue-600 dark:text-blue-400" : "opacity-40"}`}
+                        />
+                      )}
+                    </Link>
+
+                    {/* Mega Menu / Dropdown Content */}
+                    {hasChildren && (
+                      <div
+                        className={`absolute left-1/2 -translate-x-1/2 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top ${
+                          activeMenuId === item._id
+                            ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-9999"
+                            : "opacity-0 translate-y-3 scale-95 pointer-events-none"
+                        }`}
+                      >
+                        <div className="bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] min-w-[240px] p-2 backdrop-blur-2xl ring-1 ring-black/5 dark:ring-white/5">
+                          {item.children!.map((child) => (
+                            <Link
+                              key={child._id}
+                              href={ensureAbsolute(child.path) || "#"}
+                              onClick={() => setActiveMenuId(null)}
+                              className="block px-4 py-3 text-[14px] font-semibold text-zinc-500 dark:text-zinc-400 hover:bg-blue-50/80 dark:hover:bg-blue-500/10 hover:text-blue-700 dark:hover:text-blue-400 rounded-2xl transition-all"
                             >
-                              <div className="p-1 rounded-lg bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors">
-                                <Download size={18} />
-                              </div>
-                              ติดตั้งแอพพลิเคชั่น
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* --- 3. ACTIONS & USER SECTION (ขวาสุด) --- */}
-          <div className="flex items-center gap-3 shrink-0 h-10">
-            {userId && (
-              <div className="flex items-center justify-center w-10 h-10">
-                <NotificationBell />
-              </div>
-            )}
-            <div className="hidden sm:flex items-center justify-center w-10 h-10">
-              <ThemeToggle />
-            </div>
-
-            <div className="hidden lg:block w-px h-6 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
-
-            {userId ? (
-              <div
-                className="relative user-dropdown-container"
-                onMouseEnter={() => setIsUserDropdownOpen(true)}
-                onMouseLeave={() => setIsUserDropdownOpen(false)}
-              >
-                {/* ปุ่มแสดงโปรไฟล์ผู้ใช้ (User Profile Button) */}
-                <button
-                  onClick={() => {
-                    setIsUserDropdownOpen(!isUserDropdownOpen);
-                    setActiveMenuId(null);
-                  }}
-                  className={`flex items-center gap-3 p-1.5 pr-1.5 md:pr-4 rounded-full border transition-all duration-300 outline-none ${
-                    isUserDropdownOpen
-                      ? "bg-white dark:bg-zinc-900 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)] ring-2 ring-blue-500/20"
-                      : "bg-white/50 dark:bg-zinc-900/30 border-zinc-200/80 dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 shadow-sm hover:shadow"
-                  }`}
-                >
-                  <div className="relative w-9 h-9 rounded-full overflow-hidden border border-zinc-100 dark:border-zinc-700 shadow-sm shrink-0">
-                    {image ? (
-                      <Image
-                        src={image}
-                        alt={username || "User"}
-                        fill
-                        sizes="36px"
-                        priority
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-sm font-bold uppercase">
-                        {(username || "U").charAt(0)}
+                              {child.label}
+                            </Link>
+                          ))}
+                          {/* ปุ่มติดตั้ง PWA เฉพาะในเมนู 'อื่นๆ' */}
+                          {item.label === "อื่นๆ" && deferredPrompt && (
+                            <div className="pt-1 mt-1 border-t border-zinc-100 dark:border-zinc-800/60">
+                              <button
+                                onClick={handleInstallClick}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-[14px] font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
+                              >
+                                <div className="p-1 rounded-lg bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors">
+                                  <Download size={18} />
+                                </div>
+                                ติดตั้งแอพพลิเคชั่น
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
-                  <div className="text-left hidden md:block overflow-hidden">
-                    <p
-                      className={`text-[9px] font-black uppercase leading-none mb-0.5 tracking-widest ${isSuperAdmin ? "text-sky-600 dark:text-sky-400" : isAdmin ? "text-blue-600 dark:text-blue-400" : "text-emerald-600 dark:text-emerald-400"}`}
-                    >
-                      {displayRole}
-                    </p>
-                    <p className="text-[14px] font-bold text-zinc-900 dark:text-zinc-100 truncate max-w-[120px]">
-                      {username}
-                    </p>
-                  </div>
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-300 hidden md:block ${isUserDropdownOpen ? "rotate-180 text-blue-500" : "text-zinc-400"}`}
-                  />
-                </button>
+                );
+              })}
+            </div>
 
-                {/* เมนู Dropdown สำหรับผู้ใช้ (User Dropdown Menu) */}
+            {/* --- 3. ACTIONS & USER SECTION (ขวาสุด) --- */}
+            <div className="flex items-center gap-3 shrink-0 h-10">
+              <Link
+                href="/dashboard/ita"
+                className="px-4 py-1.5 rounded-full bg-linear-to-r from-amber-500 to-emerald-600 hover:from-amber-600 hover:to-emerald-700 text-white text-[13px] font-black tracking-tight shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-1.5 outline-none hover:scale-105 active:scale-95 border border-amber-400/20"
+              >
+                <span>จัดการ ITA</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+
+              {userId && (
+                <div className="flex items-center justify-center w-10 h-10">
+                  <NotificationBell />
+                </div>
+              )}
+              <div className="hidden sm:flex items-center justify-center w-10 h-10">
+                <ThemeToggle />
+              </div>
+
+              <div className="hidden lg:block w-px h-6 bg-zinc-200/80 dark:bg-zinc-800/80 mx-1" />
+
+              {userId ? (
                 <div
-                  className={`absolute right-0 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top-right ${
-                    isUserDropdownOpen
-                      ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-60"
-                      : "opacity-0 translate-y-3 scale-95 pointer-events-none"
-                  }`}
+                  className="relative user-dropdown-container"
+                  onMouseEnter={() => setIsUserDropdownOpen(true)}
+                  onMouseLeave={() => setIsUserDropdownOpen(false)}
                 >
-                  <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[28px] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)] overflow-hidden w-72 ring-1 ring-black/5 dark:ring-white/5 flex flex-col max-h-[85vh] custom-scrollbar-thin">
-                    {/* ข้อมูลสรุปผู้ใช้ด้านบนสุด (Profile Header) */}
-                    <div className="p-5 bg-zinc-50 dark:bg-zinc-950/50 border-b border-zinc-100 dark:border-zinc-800/60">
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white dark:border-zinc-800 shadow-md shrink-0">
-                          {image ? (
-                            <Image
-                              src={image}
-                              alt={username || "User"}
-                              width={48}
-                              height={48}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-lg font-black">
-                              {(username || "U").charAt(0)}
-                            </div>
-                          )}
-                        </div>
-                        <div className="overflow-hidden">
-                          <span
-                            className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest mb-1 inline-block ${isSuperAdmin ? "bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400" : isAdmin ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" : "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"}`}
-                          >
-                            {displayRole}
-                          </span>
-                          <h3 className="text-[15px] font-black text-zinc-900 dark:text-white leading-none truncate">
-                            {username}
-                          </h3>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <Link
-                          href={userId ? `/dashboard/profile/${userId}` : "/dashboard/profile"}
-                          className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white dark:bg-zinc-800 text-[11px] font-bold text-zinc-600 dark:text-zinc-300 border border-zinc-100 dark:border-zinc-700 shadow-sm hover:shadow transition-all"
-                        >
-                          <UserCog className="w-3.5 h-3.5" /> โปรไฟล์
-                        </Link>
-                        <button
-                          onClick={handleLogout}
-                          className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-[11px] font-bold text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30 shadow-sm hover:shadow transition-all"
-                        >
-                          <LogOut className="w-3.5 h-3.5" /> ออกจากระบบ
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* รายการเมนูจัดการระบบ (Dashboard & Admin) */}
-                    <div className="p-3 space-y-4 overflow-y-auto">
-                      <div>
-                        <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
-                          <Command className="w-3 h-3" /> เมนูหลัก
-                        </h4>
-
-                        {/* ปุ่มจัดการข่าวสารแบบด่วน (Featured Quick Action) */}
-                        {canManageNews && (
-                          <Link
-                            href="/dashboard/news"
-                            className="group relative flex items-center gap-4 p-4 mb-4 rounded-[22px] bg-linear-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
-                          >
-                            <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:scale-110 transition-transform duration-500">
-                              <Newspaper size={48} strokeWidth={1.5} />
-                            </div>
-                            <div className="p-2.5 rounded-xl bg-white/20 backdrop-blur-md shadow-inner">
-                              <Newspaper size={20} />
-                            </div>
-                            <div className="relative z-10">
-                              <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-0.5">
-                                Content Center
-                              </p>
-                              <h4 className="text-sm font-black uppercase tracking-tight">
-                                จัดการข่าวสาร / ประชาสัมพันธ์
-                              </h4>
-                            </div>
-                          </Link>
-                        )}
-
-                        <Link
-                          href="/"
-                          className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
-                        >
-                          <Home className="w-5 h-5" /> หน้าแรก
-                        </Link>
-
-                        <div className="space-y-0.5">
-                          {/* <Link
-                            href="/dashboard/chat"
-                            className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-sky-500/10 rounded-2xl transition-all group"
-                          >
-                            <div className="p-1.5 rounded-xl bg-sky-100 dark:bg-sky-900/30 group-hover:bg-sky-200 dark:group-hover:bg-sky-900/50 transition-colors shadow-sm">
-                              <MessageSquare size={16} />
-                            </div>
-                            ระบบแชท / กล่องข้อความ
-                          </Link> */}
-
-                          {canAccessDashboard && (
-                            <Link
-                              href="/dashboard"
-                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
-                            >
-                              <div className="p-1.5 rounded-xl bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors shadow-sm">
-                                <Command size={16} />
-                              </div>
-                              เข้าสู่ระบบ Dashboard
-                            </Link>
-                          )}
-                          {/* {!["student"].includes(role?.toLowerCase() || "") && (
-                            <Link
-                              href="/dashboard/drive"
-                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-2xl transition-all group"
-                            >
-                              <div className="p-1.5 rounded-xl bg-amber-100 dark:bg-amber-900/30 group-hover:bg-amber-200 dark:group-hover:bg-amber-900/50 transition-colors shadow-sm">
-                                <HardDrive size={16} />
-                              </div>
-                              คลังไฟล์งาน (Drive)
-                            </Link>
-                          )} */}
-                          {role?.toLowerCase() === "student" && (
-                            <Link
-                              href="/student/flagpole"
-                              className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-2xl transition-all group"
-                            >
-                              <div className="p-1.5 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition-colors shadow-sm">
-                                <Clock size={16} />
-                              </div>
-                              เช็คชื่อเข้าแถว
-                            </Link>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* ส่วนการจัดการระบบ (Admin & Executive Section) */}
-                      {(canManageAttendance ||
-                        canManageUsers ||
-                        canManageSystem ||
-                        canManageNews ||
-                        canManageQA) && (
-                        <div>
-                          {!["user", "student"].includes(role?.toLowerCase() || "") && (
-                            <h4 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
-                              <Shield className="w-3 h-3" /> ระบบจัดการ
-                            </h4>
-                          )}
-
-                          {/* การ์ดเมนูเฉพาะ Super Admin */}
-                          {isSuperAdmin && (
-                            <div className="bg-sky-50/70 dark:bg-sky-500/5 rounded-2xl p-2 mb-2 border border-sky-100 dark:border-sky-500/10 space-y-0.5">
-                              <p className="text-[9px] font-black text-sky-500 uppercase tracking-widest px-2 py-1 flex items-center gap-1.5">
-                                <Shield size={12} /> เฉพาะ Super Admin
-                              </p>
-                              <Link
-                                href="/dashboard/super-admin"
-                                className="flex items-center gap-3 px-3 py-2 text-[16px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
-                              >
-                                <Shield size={14} /> ศูนย์ควบคุมจัดการระบบ
-                              </Link>
-                              <Link
-                                href="/dashboard/permissions"
-                                className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
-                              >
-                                <Shield size={14} /> จัดการสิทธิ์แต่ละระดับ
-                              </Link>
-                            </div>
-                          )}
-
-                          {/* ระบบลงเวลาและรายงาน (Attendance & Reports) */}
-                          {(isSuperAdmin ||
-                            canManageAttendanceDashboard ||
-                            canManageAttendanceReport ||
-                            canManageAttendanceWorkReports ||
-                            canManageAttendanceLeaveApprovals ||
-                            canManageRolesAdvanced ||
-                            canManageAttendanceSettings) && (
-                            <div className="space-y-0.5">
-                              {(isSuperAdmin || canManageAttendanceDashboard) && (
-                                <Link
-                                  href="/attendance-dashboard"
-                                  className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all"
-                                >
-                                  <div className="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 shadow-sm">
-                                    <Bell size={14} />
-                                  </div>
-                                  ภาพรวมลงเวลาบุคลากร
-                                </Link>
-                              )}
-                              {isSuperAdmin && (
-                                <>
-                                  <Link
-                                    href="/dashboard/data-management"
-                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                  >
-                                    <ClipboardList size={14} className="opacity-40" />{" "}
-                                    แก้ไขข้อมูลการลงเวลา
-                                  </Link>
-                                  <Link
-                                    href="/work-reports-management"
-                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                  >
-                                    <FileText size={14} className="opacity-40" />{" "}
-                                    แก้ไขรายงานการทำงาน
-                                  </Link>
-                                </>
-                              )}
-                              {(isSuperAdmin || canManageAttendanceReport) && (
-                                <Link
-                                  href="/attendance-report"
-                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                >
-                                  <Clock size={14} className="opacity-40" /> ระบบรายงานการเข้างาน
-                                </Link>
-                              )}
-                              {(isSuperAdmin || canManageAttendanceWorkReports) && (
-                                <Link
-                                  href="/work-reports"
-                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                >
-                                  <FileText size={14} className="opacity-40" />{" "}
-                                  ระบบรายงานการปฏิบัติงาน
-                                </Link>
-                              )}
-                              {(isSuperAdmin || canManageAttendanceLeaveApprovals) && (
-                                <Link
-                                  href="/leave-approvals"
-                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                >
-                                  <CalendarCheck size={14} className="opacity-40" />{" "}
-                                  ระบบอนุมัติการลางาน
-                                </Link>
-                              )}
-                              {(isSuperAdmin || canManageRolesAdvanced) && (
-                                <Link
-                                  href="/manage-roles"
-                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                >
-                                  <UserCog size={14} className="opacity-40" /> จัดการ สิทธิ์บุคลากร
-                                </Link>
-                              )}
-                              {(isSuperAdmin || canManageAttendanceSettings) && (
-                                <Link
-                                  href="/attendance-settings"
-                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
-                                >
-                                  <Settings size={14} className="opacity-40" /> ตั้งค่าระบบลงเวลา
-                                </Link>
-                              )}
-                            </div>
-                          )}
+                  {/* ปุ่มแสดงโปรไฟล์ผู้ใช้ (User Profile Button) */}
+                  <button
+                    onClick={() => {
+                      setIsUserDropdownOpen(!isUserDropdownOpen);
+                      setActiveMenuId(null);
+                    }}
+                    className={`flex items-center gap-3 p-1.5 pr-1.5 md:pr-4 rounded-full border transition-all duration-300 outline-none ${
+                      isUserDropdownOpen
+                        ? "bg-white dark:bg-zinc-900 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)] ring-2 ring-blue-500/20"
+                        : "bg-white/50 dark:bg-zinc-900/30 border-zinc-200/80 dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 shadow-sm hover:shadow"
+                    }`}
+                  >
+                    <div className="relative w-9 h-9 rounded-full overflow-hidden border border-zinc-100 dark:border-zinc-700 shadow-sm shrink-0">
+                      {image ? (
+                        <Image
+                          src={image}
+                          alt={username || "User"}
+                          fill
+                          sizes="36px"
+                          priority
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-sm font-bold uppercase">
+                          {(username || "U").charAt(0)}
                         </div>
                       )}
                     </div>
+                    <div className="text-left hidden md:block overflow-hidden">
+                      <p
+                        className={`text-[9px] font-black uppercase leading-none mb-0.5 tracking-widest ${isSuperAdmin ? "text-sky-600 dark:text-sky-400" : isAdmin ? "text-blue-600 dark:text-blue-400" : "text-emerald-600 dark:text-emerald-400"}`}
+                      >
+                        {displayRole}
+                      </p>
+                      <p className="text-[14px] font-bold text-zinc-900 dark:text-zinc-100 truncate max-w-[120px]">
+                        {username}
+                      </p>
+                    </div>
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform duration-300 hidden md:block ${isUserDropdownOpen ? "rotate-180 text-blue-500" : "text-zinc-400"}`}
+                    />
+                  </button>
 
-                    {/* ส่วนท้ายเมนู (Footer) */}
-                    <div className="p-3 border-t border-zinc-100 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-950/30">
-                      <div className="flex items-center justify-between text-[10px] font-black text-zinc-300 dark:text-zinc-700 uppercase tracking-widest px-2">
-                        <span>KTL by AllMaster</span>
-                        <span>v3.2026</span>
+                  {/* เมนู Dropdown สำหรับผู้ใช้ (User Dropdown Menu) */}
+                  <div
+                    className={`absolute right-0 top-full pt-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top-right ${
+                      isUserDropdownOpen
+                        ? "opacity-100 translate-y-0 scale-100 pointer-events-auto z-60"
+                        : "opacity-0 translate-y-3 scale-95 pointer-events-none"
+                    }`}
+                  >
+                    <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[28px] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)] overflow-hidden w-72 ring-1 ring-black/5 dark:ring-white/5 flex flex-col max-h-[85vh] custom-scrollbar-thin">
+                      {/* ข้อมูลสรุปผู้ใช้ด้านบนสุด (Profile Header) */}
+                      <div className="p-5 bg-zinc-50 dark:bg-zinc-950/50 border-b border-zinc-100 dark:border-zinc-800/60">
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white dark:border-zinc-800 shadow-md shrink-0">
+                            {image ? (
+                              <Image
+                                src={image}
+                                alt={username || "User"}
+                                width={48}
+                                height={48}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-lg font-black">
+                                {(username || "U").charAt(0)}
+                              </div>
+                            )}
+                          </div>
+                          <div className="overflow-hidden">
+                            <span
+                              className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest mb-1 inline-block ${isSuperAdmin ? "bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400" : isAdmin ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" : "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"}`}
+                            >
+                              {displayRole}
+                            </span>
+                            <h3 className="text-[15px] font-black text-zinc-900 dark:text-white leading-none truncate">
+                              {username}
+                            </h3>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Link
+                            href={userId ? `/dashboard/profile/${userId}` : "/dashboard/profile"}
+                            className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white dark:bg-zinc-800 text-[11px] font-bold text-zinc-600 dark:text-zinc-300 border border-zinc-100 dark:border-zinc-700 shadow-sm hover:shadow transition-all"
+                          >
+                            <UserCog className="w-3.5 h-3.5" /> โปรไฟล์
+                          </Link>
+                          <button
+                            onClick={handleLogout}
+                            className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-[11px] font-bold text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30 shadow-sm hover:shadow transition-all"
+                          >
+                            <LogOut className="w-3.5 h-3.5" /> ออกจากระบบ
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* รายการเมนูจัดการระบบ (Dashboard & Admin) */}
+                      <div className="p-3 space-y-4 overflow-y-auto">
+                        <div>
+                          <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
+                            <Command className="w-3 h-3" /> เมนูหลัก
+                          </h4>
+
+                          {/* ปุ่มจัดการข่าวสารแบบด่วน (Featured Quick Action) */}
+                          {canManageNews && (
+                            <Link
+                              href="/dashboard/news"
+                              className="group relative flex items-center gap-4 p-4 mb-4 rounded-[22px] bg-linear-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                            >
+                              <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:scale-110 transition-transform duration-500">
+                                <Newspaper size={48} strokeWidth={1.5} />
+                              </div>
+                              <div className="p-2.5 rounded-xl bg-white/20 backdrop-blur-md shadow-inner">
+                                <Newspaper size={20} />
+                              </div>
+                              <div className="relative z-10">
+                                <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-0.5">
+                                  Content Center
+                                </p>
+                                <h4 className="text-sm font-black uppercase tracking-tight">
+                                  จัดการข่าวสาร / ประชาสัมพันธ์
+                                </h4>
+                              </div>
+                            </Link>
+                          )}
+
+                          <Link
+                            href="/"
+                            className={`flex items-center gap-4 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${pathname === "/" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900"}`}
+                          >
+                            <Home className="w-5 h-5" /> หน้าแรก
+                          </Link>
+
+                          <div className="space-y-0.5">
+                            {canAccessDashboard && (
+                              <Link
+                                href="/dashboard"
+                                className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
+                              >
+                                <div className="p-1.5 rounded-xl bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors shadow-sm">
+                                  <Command size={16} />
+                                </div>
+                                เข้าสู่ระบบ Dashboard
+                              </Link>
+                            )}
+                            {role?.toLowerCase() === "student" && (
+                              <Link
+                                href="/student/flagpole"
+                                className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-2xl transition-all group"
+                              >
+                                <div className="p-1.5 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition-colors shadow-sm">
+                                  <Clock size={16} />
+                                </div>
+                                เช็คชื่อเข้าแถว
+                              </Link>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* ส่วนการจัดการระบบ (Admin & Executive Section) */}
+                        {(canManageAttendance ||
+                          canManageUsers ||
+                          canManageSystem ||
+                          canManageNews ||
+                          canManageQA) && (
+                          <div>
+                            {!["user", "student"].includes(role?.toLowerCase() || "") && (
+                              <h4 className="text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.3em] mb-2 pl-2 flex items-center gap-2">
+                                <Shield className="w-3 h-3" /> ระบบจัดการ
+                              </h4>
+                            )}
+
+                            {/* การ์ดเมนูเฉพาะ Super Admin */}
+                            {isSuperAdmin && (
+                              <div className="bg-sky-50/70 dark:bg-sky-500/5 rounded-2xl p-2 mb-2 border border-sky-100 dark:border-sky-500/10 space-y-0.5">
+                                <p className="text-[9px] font-black text-sky-500 uppercase tracking-widest px-2 py-1 flex items-center gap-1.5">
+                                  <Shield size={12} /> เฉพาะ Super Admin
+                                </p>
+                                <Link
+                                  href="/dashboard/super-admin"
+                                  className="flex items-center gap-3 px-3 py-2 text-[16px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
+                                >
+                                  <Shield size={14} /> ศูนย์ควบคุมจัดการระบบ
+                                </Link>
+                                <Link
+                                  href="/dashboard/permissions"
+                                  className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
+                                >
+                                  <Shield size={14} /> จัดการสิทธิ์แต่ละระดับ
+                                </Link>
+                              </div>
+                            )}
+
+                            {/* ระบบลงเวลาและรายงาน (Attendance & Reports) */}
+                            {(isSuperAdmin ||
+                              canManageAttendanceDashboard ||
+                              canManageAttendanceReport ||
+                              canManageAttendanceWorkReports ||
+                              canManageAttendanceLeaveApprovals ||
+                              canManageRolesAdvanced ||
+                              canManageAttendanceSettings) && (
+                              <div className="space-y-0.5">
+                                {(isSuperAdmin || canManageAttendanceDashboard) && (
+                                  <Link
+                                    href="/attendance-dashboard"
+                                    className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all"
+                                  >
+                                    <div className="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 shadow-sm">
+                                      <Bell size={14} />
+                                    </div>
+                                    ภาพรวมลงเวลาบุคลากร
+                                  </Link>
+                                )}
+                                {isSuperAdmin && (
+                                  <>
+                                    <Link
+                                      href="/dashboard/data-management"
+                                      className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                    >
+                                      <ClipboardList size={14} className="opacity-40" />{" "}
+                                      แก้ไขข้อมูลการลงเวลา
+                                    </Link>
+                                    <Link
+                                      href="/work-reports-management"
+                                      className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                    >
+                                      <FileText size={14} className="opacity-40" />{" "}
+                                      แก้ไขรายงานการทำงาน
+                                    </Link>
+                                  </>
+                                )}
+                                {(isSuperAdmin || canManageAttendanceReport) && (
+                                  <Link
+                                    href="/attendance-report"
+                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                  >
+                                    <Clock size={14} className="opacity-40" /> ระบบรายงานการเข้างาน
+                                  </Link>
+                                )}
+                                {(isSuperAdmin || canManageAttendanceWorkReports) && (
+                                  <Link
+                                    href="/work-reports"
+                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                  >
+                                    <FileText size={14} className="opacity-40" />{" "}
+                                    ระบบรายงานการปฏิบัติงาน
+                                  </Link>
+                                )}
+                                {(isSuperAdmin || canManageAttendanceLeaveApprovals) && (
+                                  <Link
+                                    href="/leave-approvals"
+                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                  >
+                                    <CalendarCheck size={14} className="opacity-40" />{" "}
+                                    ระบบอนุมัติการลางาน
+                                  </Link>
+                                )}
+                                {(isSuperAdmin || canManageRolesAdvanced) && (
+                                  <Link
+                                    href="/manage-roles"
+                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                  >
+                                    <UserCog size={14} className="opacity-40" /> จัดการ สิทธิ์บุคลากร
+                                  </Link>
+                                )}
+                                {(isSuperAdmin || canManageAttendanceSettings) && (
+                                  <Link
+                                    href="/attendance-settings"
+                                    className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                                  >
+                                    <Settings size={14} className="opacity-40" /> ตั้งค่าระบบลงเวลา
+                                  </Link>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* ส่วนท้ายเมนู (Footer) */}
+                      <div className="p-3 border-t border-zinc-100 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-950/30">
+                        <div className="flex items-center justify-between text-[10px] font-black text-zinc-300 dark:text-zinc-700 uppercase tracking-widest px-2">
+                          <span>KTL by AllMaster</span>
+                          <span>v3.2026</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              /* ปุ่มเข้าสู่ระบบ (Sign In Button) สำหรับ Guest */
-              <Link
-                href="/login"
-                className="relative overflow-hidden px-6 py-2.5 rounded-full bg-linear-to-b from-blue-500 to-blue-600 text-white text-[15px] font-bold transition-all hover:shadow-[0_4px_20px_-4px_rgba(59,130,246,0.5)] active:scale-95 border border-blue-400/20 shadow-sm"
-              >
-                เข้าสู่ระบบ
-              </Link>
-            )}
+              ) : null}
 
-            {/* ปุ่ม Mobile Menu (แสดงเฉพาะบนจอเล็ก) */}
-            <div className="lg:hidden sm:pl-2">
-              <MobileMenu
-                menuTree={filteredMenuTree}
-                image={image}
-                deferredPrompt={deferredPrompt}
-                onInstall={handleInstallClick}
-                username={username}
-                role={role}
-                userId={userId}
-                permissions={permissions}
-              />
+              {/* ปุ่ม Mobile Menu (แสดงเฉพาะบนจอเล็ก) */}
+              <div className="lg:hidden sm:pl-2">
+                <MobileMenu
+                  menuTree={filteredMenuTree}
+                  image={image}
+                  deferredPrompt={deferredPrompt}
+                  onInstall={handleInstallClick}
+                  username={username}
+                  role={role}
+                  userId={userId}
+                  permissions={permissions}
+                />
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex items-center justify-center gap-4 w-full py-1">
+            {/* 
+              ระบบเมนูเดิมทั้งหมดใน NavbarClient ถูกนำออกชั่วคราวเพื่อมุ่งเน้นการใช้งานระบบ จัดการ ITA ตามความต้องการของผู้ใช้
+            */}
+            <Link
+              href="/dashboard/ita"
+              className="px-8 py-3 rounded-full bg-linear-to-r from-amber-500 to-emerald-600 hover:from-amber-600 hover:to-emerald-700 text-white text-[16px] font-black tracking-tight shadow-[0_4px_20px_-4px_rgba(245,158,11,0.4)] hover:shadow-[0_8px_30px_rgba(16,185,129,0.5)] hover:scale-105 active:scale-95 transition-all duration-300 border border-amber-400/20 flex items-center gap-2 group outline-none"
+            >
+              <span>จัดการ ITA</span>
+              <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+          </div>
+        )}
       </nav>
     </div>
   );

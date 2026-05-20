@@ -169,7 +169,7 @@ export default async function Footer() {
           <div className="flex items-center gap-1">
             สงวนลิขสิทธิ์ © {new Date().getFullYear()}.
             <p className="text-blue-500">
-              <span>SAKCAT</span> /งานศูนย์ข้อมูลและสารสนเทศ
+              <span>SSKCAT</span> /งานศูนย์ข้อมูลและสารสนเทศ
             </p>
           </div>
           <p className="flex items-center gap-1">

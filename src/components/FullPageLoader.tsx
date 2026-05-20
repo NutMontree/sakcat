@@ -71,7 +71,7 @@ export default function FullPageLoader({
         >
           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           <span className="text-[9px] font-black text-slate-400 dark:text-zinc-600 uppercase tracking-widest">
-            SAKCAT Systems Operational
+            SSKCAT Systems Operational
           </span>
         </motion.div>
       </div>
