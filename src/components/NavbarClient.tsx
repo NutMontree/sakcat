@@ -273,17 +273,17 @@ export default function NavbarClient({
             {/* --- 1. LOGO & BRANDING --- */}
             <Link href="/" className="flex items-center gap-3 shrink-0 group outline-none">
               <div className="relative w-10 h-10 transition-transform duration-300 group-hover:scale-105 group-active:scale-95 drop-shadow-sm">
-                {/* <Image
+                <Image
                   src="/images/favicon.ico"
                   alt="KTL Logo"
                   fill
                   sizes="40px"
                   priority
                   className="object-contain"
-                /> */}
+                />
               </div>
               <span className="text-zinc-900 dark:text-white font-black text-[22px] tracking-tighter uppercase italic drop-shadow-sm hidden sm:block">
-                {/* SAKCAT<span className="text-blue-600 dark:text-blue-500"> </span> */}
+                SAKCAT<span className="text-blue-600 dark:text-blue-500"> </span>
               </span>
             </Link>
 

@@ -64,87 +64,22 @@ export async function POST(req: Request) {
             message: 'File uploaded successfully' 
           });
         }
-      } catch (cloudinaryErr) {
-        console.error("Cloudinary upload failed, falling back to local:", cloudinaryErr);
+        throw new Error("Cloudinary returned a null URL.");
+      } catch (cloudinaryErr: any) {
+        console.error("Cloudinary upload failed:", cloudinaryErr);
+        return NextResponse.json({ 
+          success: false, 
+          message: `Cloudinary upload failed: ${cloudinaryErr?.message || String(cloudinaryErr)}` 
+        }, { status: 500 });
       }
     }
-    // Detect extension from mime type if file name is generic "blob"
-    let ext = file.name.split('.').pop() || 'jpg';
-    if (ext === 'blob') {
-      const mimeToExt: Record<string, string> = {
-        'image/jpeg': 'jpg',
-        'image/png': 'png',
-        'image/gif': 'gif',
-        'image/webp': 'webp'
-      };
-      ext = mimeToExt[file.type] || 'jpg';
-    }
-    
-    const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}.${ext}`;
-    
-    const baseDir = join(process.cwd(), "public");
-    
-    const uploadDir = join(baseDir, sanitizedFolder);
-    
-    // Create directory if it doesn't exist
-    await mkdir(uploadDir, { recursive: true });
-
-    const filepath = join(uploadDir, filename);
-    await writeFile(filepath, buffer);
-    console.log(`✅ File uploaded and saved to: ${filepath}`);
-
-    // Optionally generate a thumbnail for videos/gifs
-    let thumbnail_url: string | null = null;
-    try {
-      const shouldGenThumb = (process.env.ENABLE_VIDEO_THUMBNAIL || '1') === '1';
-      if (shouldGenThumb) {
-        const thumbName = `${filename}.thumb.jpg`;
-        const thumbPath = join(uploadDir, thumbName);
-
-        if (isVideo) {
-          try {
-            const { spawn } = await import('child_process');
-            // Run ffmpeg to capture a frame at 1 second
-            await new Promise<void>((resolve, reject) => {
-              const ff = spawn('ffmpeg', ['-ss', '00:00:01', '-i', filepath, '-frames:v', '1', '-q:v', '2', thumbPath]);
-              ff.on('error', (err) => reject(err));
-              ff.on('close', (code) => {
-                if (code === 0) resolve(); else reject(new Error(`ffmpeg exited with ${code}`));
-              });
-            });
-            thumbnail_url = `/api/media/${sanitizedFolder}/${thumbName}`;
-          } catch (fferr) {
-            console.warn('Video thumbnail generation failed:', fferr);
-          }
-        } else if (fileType === 'image/gif') {
-          try {
-            const sharp = (await import('sharp')).default;
-            // Generate a static thumbnail for GIF using sharp (first frame)
-            await sharp(filepath)
-              .resize(400, 400, { fit: 'cover' })
-              .toFormat('jpg')
-              .toFile(thumbPath);
-            thumbnail_url = `/api/media/${sanitizedFolder}/${thumbName}`;
-          } catch (gifErr) {
-            console.warn('GIF thumbnail generation failed:', gifErr);
-          }
-        }
-      }
-    } catch (thumbErr) {
-      console.warn('Thumbnail generation skipped:', thumbErr);
-    }
-
-    // Return the URL pointing to our media API route
-    const secure_url = `/api/media/${folder}/${filename}`;
 
     return NextResponse.json({ 
-      success: true, 
-      secure_url: secure_url,
-      thumbnail_url: thumbnail_url,
-      message: 'File uploaded successfully' 
-    });
+      success: false, 
+      message: 'Cloudinary configuration is missing and local fallback is disabled.' 
+    }, { status: 500 });
   } catch (error: any) {
-    console.error('Local upload error:', error);
+    console.error('Upload error:', error);
     return NextResponse.json({ 
       success: false, 
       message: error.message || 'Upload failed',
