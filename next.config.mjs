@@ -77,7 +77,9 @@ const nextConfig = {
       }
     );
 
-    return rules;
+    return {
+      beforeFiles: rules,
+    };
   },
 
   experimental: {
@@ -105,21 +107,6 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "sakcatv1.vercel.app",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "sakcatv2.vercel.app",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "sakcatv3.vercel.app",
         pathname: "/**",
       },
       {
