@@ -83,7 +83,13 @@ const nextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: "500mb",
-      allowedOrigins: ["sakcat.vercel.app", "sakcat.site", "localhost:3000"],
+      allowedOrigins: [
+        "sakcat.vercel.app",
+        "sskcat.vercel.app",
+        "sakcat.site",
+        "ktltc.site",
+        "localhost:3000"
+      ],
     },
   },
   outputFileTracingExcludes: {
@@ -119,6 +125,11 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "ui-avatars.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "ktltc.site",
         pathname: "/**",
       },
     ],
