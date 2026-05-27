@@ -42,28 +42,42 @@ const nextConfig = {
   },
 
   async rewrites() {
-    return [
+    const apiTarget = process.env.NEXT_PUBLIC_API_URL;
+    const rules = [];
+
+    // If an API target is configured, proxy ALL /api requests to it!
+    if (apiTarget) {
+      rules.push({
+        source: "/api/:path*",
+        destination: `${apiTarget}/api/:path*`,
+      });
+    }
+
+    // Static assets mapped to media API
+    rules.push(
       {
         source: "/uploads/:path*",
-        destination: "/api/media/uploads/:path*",
+        destination: apiTarget ? `${apiTarget}/api/media/uploads/:path*` : "/api/media/uploads/:path*",
       },
       {
         source: "/attendance_photos/:path*",
-        destination: "/api/media/attendance_photos/:path*",
+        destination: apiTarget ? `${apiTarget}/api/media/attendance_photos/:path*` : "/api/media/attendance_photos/:path*",
       },
       {
         source: "/images/:path*",
-        destination: "/api/media/images/:path*",
+        destination: apiTarget ? `${apiTarget}/api/media/images/:path*` : "/api/media/images/:path*",
       },
       {
         source: "/pdf/:path*",
-        destination: "/api/media/pdf/:path*",
+        destination: apiTarget ? `${apiTarget}/api/media/pdf/:path*` : "/api/media/pdf/:path*",
       },
       {
         source: "/sakcat_drive/:path*",
-        destination: "/api/media/sakcat_drive/:path*",
-      },
-    ];
+        destination: apiTarget ? `${apiTarget}/api/media/sakcat_drive/:path*` : "/api/media/sakcat_drive/:path*",
+      }
+    );
+
+    return rules;
   },
 
   experimental: {

@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     const year = searchParams.get("year") || "2568";
 
     const client = await clientPromise;
-    const db = client.db("sskcat");
+    const db = client.db("sakcat_db");
 
     // ดึงข้อมูล OIT ทั้งหมดของปีที่เลือก
     const items = await db
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
   try {
     const session = await auth();
     const client = await clientPromise;
-    const db = client.db("sskcat");
+    const db = client.db("sakcat_db");
 
     const body = await req.json();
     const { year, oitCode, title, description, links, action } = body;
