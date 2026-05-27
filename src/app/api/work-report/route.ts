@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { auth, hasPermission } from "@/lib/auth";
 import { ObjectId } from "mongodb";
-import { saveFileLocally } from "@/lib/upload-server";
+import { uploadToMongoDB } from "@/lib/upload-server";
 import { deleteFileFromUrl } from "@/lib/file-utils";
 
 export const dynamic = "force-dynamic";
@@ -10,8 +10,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   try {
     const session = await auth();
-    if (!session)
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const userId = (session?.user as any)?.id;
     const userRole = (session?.user as any)?.role;
@@ -33,7 +32,10 @@ export async function GET(req: Request) {
     if (startDateParam && endDateParam) {
       const canAccess = await hasPermission(userRole, "manage_attendance_work_reports");
       if (!canAccess) {
-        return NextResponse.json({ error: "Forbidden: No permission for Work Reports" }, { status: 403 });
+        return NextResponse.json(
+          { error: "Forbidden: No permission for Work Reports" },
+          { status: 403 },
+        );
       }
 
       const matchStage: any = {
@@ -95,10 +97,7 @@ export async function GET(req: Request) {
         },
       ];
 
-      const result = await db
-        .collection("work_reports")
-        .aggregate(facetPipeline)
-        .toArray();
+      const result = await db.collection("work_reports").aggregate(facetPipeline).toArray();
 
       const total = result[0]?.metadata[0]?.total || 0;
       const records = result[0]?.data || [];
@@ -118,7 +117,8 @@ export async function GET(req: Request) {
 
     if (!dateParam && !startDateParam) {
       // User history mode
-      const reports = await db.collection("work_reports")
+      const reports = await db
+        .collection("work_reports")
         .find({ userId: new ObjectId(queryUserId) })
         .sort({ date: -1, createdAt: -1 })
         .skip(skip)
@@ -131,11 +131,11 @@ export async function GET(req: Request) {
 
       return NextResponse.json({
         success: true,
-        data: reports.map(r => ({ ...r, id: r._id.toString() })),
+        data: reports.map((r) => ({ ...r, id: r._id.toString() })),
         total,
         page,
         limit,
-        hasMore: total > skip + reports.length
+        hasMore: total > skip + reports.length,
       });
     }
 
@@ -164,10 +164,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ success: true, data: report });
   } catch (error: any) {
     console.error("Work Report GET Error:", error);
-    return NextResponse.json(
-      { success: false, message: error.message },
-      { status: 500 },
-    );
+    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
 }
 
@@ -175,21 +172,27 @@ export async function POST(req: Request) {
   try {
     const session = await auth();
     const userId = (session?.user as any)?.id;
-    if (!userId)
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const data = await req.json();
     const { date, activities, summary, problems, plansNextDay, images } = data;
 
-    // Handle Local Uploads if images are provided
+    // Handle MongoDB Uploads if images are provided
     let imageUrls: string[] = [];
     if (images && Array.isArray(images) && images.length > 0) {
       for (const img of images) {
         if (img.startsWith("data:image")) {
-          const imageUrl = await saveFileLocally(img, "work_reports", "report");
+          const base64Data = img.split(",")[1];
+          const buffer = Buffer.from(base64Data, "base64");
+          const imageUrl = await uploadToMongoDB(
+            buffer,
+            `report-${Date.now()}.jpg`,
+            "work_reports",
+            "image/jpeg",
+          );
           if (imageUrl) imageUrls.push(imageUrl);
         } else if (img.startsWith("http") || img.startsWith("/")) {
-          // Keep existing URLs (Cloudinary or local)
+          // Keep existing URLs
           imageUrls.push(img);
         }
       }
@@ -224,11 +227,10 @@ export async function POST(req: Request) {
 
     const result = await db
       .collection("work_reports")
-      .findOneAndUpdate(
-        { userId: new ObjectId(userId), date: reportDate },
-        updateDoc,
-        { upsert: true, returnDocument: "after" },
-      );
+      .findOneAndUpdate({ userId: new ObjectId(userId), date: reportDate }, updateDoc, {
+        upsert: true,
+        returnDocument: "after",
+      });
 
     // Safety check for result (TypeScript)
     const savedReport = result?.value || result;
@@ -236,10 +238,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, data: savedReport });
   } catch (error: any) {
     console.error("Work Report POST Error:", error);
-    return NextResponse.json(
-      { success: false, message: error.message },
-      { status: 500 },
-    );
+    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
 }
 
@@ -266,7 +265,10 @@ export async function PATCH(req: Request) {
     const canAccess = await hasPermission(userRole, "manage_attendance_work_reports");
 
     if (!isOwner && !canAccess) {
-      return NextResponse.json({ error: "Forbidden: Not authorized to edit this report" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Forbidden: Not authorized to edit this report" },
+        { status: 403 },
+      );
     }
 
     const updates: any = {
@@ -279,10 +281,9 @@ export async function PATCH(req: Request) {
 
     if (images) updates.images = images;
 
-    const result = await db.collection("work_reports").updateOne(
-      { _id: new ObjectId(id) },
-      { $set: updates }
-    );
+    const result = await db
+      .collection("work_reports")
+      .updateOne({ _id: new ObjectId(id) }, { $set: updates });
 
     // --- ลบรูปภาพที่ถูกเอาออก ---
     if (images && existingReport.images) {
@@ -300,10 +301,7 @@ export async function PATCH(req: Request) {
     });
   } catch (error: any) {
     console.error("Work Report PATCH Error:", error);
-    return NextResponse.json(
-      { success: false, message: error.message },
-      { status: 500 },
-    );
+    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
 }
 
@@ -313,7 +311,10 @@ export async function DELETE(req: Request) {
     const userRole = (session?.user as any)?.role;
     const canAccess = await hasPermission(userRole, "manage_attendance_work_reports");
     if (!canAccess) {
-      return NextResponse.json({ error: "Forbidden: No permission for Work Reports" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Forbidden: No permission for Work Reports" },
+        { status: 403 },
+      );
     }
 
     const { searchParams } = new URL(req.url);
@@ -333,14 +334,11 @@ export async function DELETE(req: Request) {
       });
     }
 
-    if (!id)
-      return NextResponse.json({ error: "Missing report ID" }, { status: 400 });
+    if (!id) return NextResponse.json({ error: "Missing report ID" }, { status: 400 });
 
     const reportToDelete = await db.collection("work_reports").findOne({ _id: new ObjectId(id) });
-    
-    result = await db
-      .collection("work_reports")
-      .deleteOne({ _id: new ObjectId(id) });
+
+    result = await db.collection("work_reports").deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {
       return NextResponse.json({ error: "Report not found" }, { status: 404 });
@@ -359,9 +357,6 @@ export async function DELETE(req: Request) {
     });
   } catch (error: any) {
     console.error("Work Report DELETE Error:", error);
-    return NextResponse.json(
-      { success: false, message: error.message },
-      { status: 500 },
-    );
+    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
 }

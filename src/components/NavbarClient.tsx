@@ -361,13 +361,13 @@ export default function NavbarClient({
 
             {/* --- 3. ACTIONS & USER SECTION (ขวาสุด) --- */}
             <div className="flex items-center gap-3 shrink-0 h-10">
-              <Link
+              {/* <Link
                 href="/dashboard/ita"
                 className="px-4 py-1.5 rounded-full bg-linear-to-r from-amber-500 to-emerald-600 hover:from-amber-600 hover:to-emerald-700 text-white text-[13px] font-black tracking-tight shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-1.5 outline-none hover:scale-105 active:scale-95 border border-amber-400/20"
               >
                 <span>จัดการ ITA</span>
                 <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
+              </Link> */}
 
               {userId && (
                 <div className="flex items-center justify-center w-10 h-10">
@@ -649,7 +649,8 @@ export default function NavbarClient({
                                     href="/manage-roles"
                                     className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all"
                                   >
-                                    <UserCog size={14} className="opacity-40" /> จัดการ สิทธิ์บุคลากร
+                                    <UserCog size={14} className="opacity-40" /> จัดการ
+                                    สิทธิ์บุคลากร
                                   </Link>
                                 )}
                                 {(isSuperAdmin || canManageAttendanceSettings) && (
@@ -698,13 +699,13 @@ export default function NavbarClient({
             {/* 
               ระบบเมนูเดิมทั้งหมดใน NavbarClient ถูกนำออกชั่วคราวเพื่อมุ่งเน้นการใช้งานระบบ จัดการ ITA ตามความต้องการของผู้ใช้
             */}
-            <Link
+            {/* <Link
               href="/dashboard/ita"
               className="px-8 py-3 rounded-full bg-linear-to-r from-amber-500 to-emerald-600 hover:from-amber-600 hover:to-emerald-700 text-white text-[16px] font-black tracking-tight shadow-[0_4px_20px_-4px_rgba(245,158,11,0.4)] hover:shadow-[0_8px_30px_rgba(16,185,129,0.5)] hover:scale-105 active:scale-95 transition-all duration-300 border border-amber-400/20 flex items-center gap-2 group outline-none"
             >
               <span>จัดการ ITA</span>
               <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
+            </Link> */}
           </div>
         )}
       </nav>

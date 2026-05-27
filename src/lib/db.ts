@@ -2,21 +2,26 @@ import { MongoClient } from "mongodb";
 
 /**
  * db.ts: ไฟล์จัดการการเชื่อมต่อฐานข้อมูล MongoDB (Native Driver)
- * 
- * หน้าที่: 
- * 1. สร้าง Connection Pool ไปยัง MongoDB 
+ *
+ * หน้าที่:
+ * 1. สร้าง Connection Pool ไปยัง MongoDB
  * 2. ใช้ Pattern 'Global Variable' เพื่อป้องกันการสร้าง Connection ใหม่ทุกครั้งที่มีการ Request (ช่วยประหยัดทรัพยากร)
  * 3. จัดการสร้าง Index อัตโนมัติเพื่อเพิ่มความเร็วในการค้นหาข้อมูล (Performance Optimization)
- * 
+ *
  * ความเชื่อมโยง:
  * - ถูกเรียกใช้ในทุกๆ API Route ที่ต้องการดึงข้อมูลจากฐานข้อมูล
  */
 
-if (!process.env.MONGODB_URI) {
+const uri = process.env.MONGODB_URI;
+
+if (!uri) {
+  console.error("❌ [MongoDB] MONGODB_URI is not defined in environment variables");
+  console.error(
+    "Available env vars:",
+    Object.keys(process.env).filter((k) => k.includes("MONGO") || k.includes("CLOUD")),
+  );
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
 }
-
-const uri = process.env.MONGODB_URI;
 // ทำการเซนเซอร์รหัสผ่านใน Log เพื่อความปลอดภัย
 const sanitizedUri = uri.replace(/\/\/.*@/, "//****:****@");
 console.log(`🔌 [MongoDB] Target: ${sanitizedUri}`);
@@ -31,7 +36,7 @@ let clientPromise: Promise<MongoClient>;
 
 /**
  * ฟังก์ชันสำหรับสร้าง Index อัตโนมัติ (Database Indexing)
- * หน้าที่: เพิ่มความเร็วในการสืบค้นข้อมูลในคอลเลกชันต่างๆ 
+ * หน้าที่: เพิ่มความเร็วในการสืบค้นข้อมูลในคอลเลกชันต่างๆ
  */
 async function createIndexes(promise: Promise<MongoClient>) {
   try {
@@ -56,6 +61,10 @@ async function createIndexes(promise: Promise<MongoClient>) {
     await db.collection("leave_requests").createIndex({ userId: 1 });
     await db.collection("leave_requests").createIndex({ startDate: -1 });
 
+    // 6. Index สำหรับ Files (MongoDB Storage): ค้นหาไฟล์ได้เร็ว
+    await db.collection("files").createIndex({ uploadedAt: -1 });
+    await db.collection("files").createIndex({ folder: 1 });
+
     console.log("✅ [MongoDB] Indexes created/verified successfully");
   } catch (error) {
     console.error("❌ [MongoDB] Index creation error:", error);
@@ -70,7 +79,8 @@ const globalWithMongo = global as typeof globalThis & {
 if (!globalWithMongo._mongoClientPromise) {
   console.log("🔌 [MongoDB] Initializing new connection...");
   client = new MongoClient(uri, options);
-  globalWithMongo._mongoClientPromise = client.connect()
+  globalWithMongo._mongoClientPromise = client
+    .connect()
     .then((connectedClient) => {
       console.log("✅ [MongoDB] Connected successfully");
       return connectedClient;
@@ -80,7 +90,7 @@ if (!globalWithMongo._mongoClientPromise) {
       globalWithMongo._mongoClientPromise = undefined; // รีเซ็ตเพื่อให้ลองเชื่อมต่อใหม่ได้
       throw err;
     });
-  
+
   // รันการสร้าง Index ในพื้นหลังเฉพาะเมื่อไม่ใช่ Production/Serverless Environment เพื่อความเร็วและเสถียรภาพ
   if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
     createIndexes(globalWithMongo._mongoClientPromise);
@@ -91,4 +101,3 @@ clientPromise = globalWithMongo._mongoClientPromise;
 
 // ส่งออก clientPromise เพื่อให้ไฟล์อื่นนำไปใช้ (เช่น await clientPromise)
 export default clientPromise;
-

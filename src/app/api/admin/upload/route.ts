@@ -1,20 +1,25 @@
 // src\app\api\admin\upload\route.ts
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { saveFileLocally } from "@/lib/upload-server";
+import { uploadToMongoDB } from "@/lib/upload-server";
 
 export async function POST(req: Request) {
   try {
     const session = await auth();
     const userRole = (session?.user as any)?.role?.toLowerCase();
-    
+
     const client = await (await import("@/lib/db")).default;
     const db = client.db("sakcat_db");
 
     // Check dynamic permissions
     const rolePerms = await db.collection("role_permissions").findOne({ role: userRole });
     const p = rolePerms?.permissions;
-    const hasUploadPermission = p?.manage_news || p?.manage_pages || p?.manage_users || p?.manage_system || userRole === "super_admin";
+    const hasUploadPermission =
+      p?.manage_news ||
+      p?.manage_pages ||
+      p?.manage_users ||
+      p?.manage_system ||
+      userRole === "super_admin";
 
     if (!session || !hasUploadPermission) {
       // Legacy fallback
@@ -46,11 +51,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // ✅ Save to Local Storage
-    const secure_url = await saveFileLocally(dataToUpload, folder, "admin-upload");
+    // ✅ Save to MongoDB
+    const buffer =
+      typeof dataToUpload === "string"
+        ? Buffer.from(dataToUpload.split(",")[1], "base64")
+        : dataToUpload;
+    const secure_url = await uploadToMongoDB(
+      buffer,
+      `admin-${Date.now()}.jpg`,
+      folder,
+      "image/jpeg",
+    );
 
     if (!secure_url) {
-      throw new Error("Failed to save file locally");
+      throw new Error("Failed to save file to MongoDB");
     }
 
     return NextResponse.json({
@@ -61,9 +75,6 @@ export async function POST(req: Request) {
     });
   } catch (error: any) {
     console.error("Upload Error:", error);
-    return NextResponse.json(
-      { error: "การอัปโหลดล้มเหลว" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "การอัปโหลดล้มเหลว" }, { status: 500 });
   }
 }

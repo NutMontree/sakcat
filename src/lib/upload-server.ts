@@ -1,80 +1,58 @@
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
+import clientPromise from "./db";
+import { Binary } from "mongodb";
+import { v4 as uuidv4 } from "uuid";
 
 /**
- * upload-server.ts: ไฟล์ตัวช่วยสำหรับบันทึกไฟล์ลงบนเครื่อง Server (ฝั่ง Server-side)
- * 
- * หน้าที่: 
+ * upload-server.ts: ไฟล์ตัวช่วยสำหรับบันทึกไฟล์ (ฝั่ง Server-side)
+ *
+ * หน้าที่:
  * - รับข้อมูลไฟล์ในรูปแบบ Buffer หรือ Base64
- * - บันทึกไฟล์ลงในโฟลเดอร์ public/uploads (หรือโฟลเดอร์ที่ระบุ)
+ * - บันทึกไฟล์ลงใน MongoDB (เก็บเป็น Binary Data)
  * - คืนค่าเป็น URL สำหรับเข้าถึงไฟล์ผ่าน API Media
  */
 
 /**
- * uploadToCloudinary: อัปโหลดไฟล์ไปยัง Cloudinary ผ่าน REST API
+ * uploadToMongoDB: บันทึกไฟล์ลงใน MongoDB
  */
-export async function uploadToCloudinary(
-  fileData: string | Buffer,
-  folder: string = "uploads"
+export async function uploadToMongoDB(
+  fileData: Buffer,
+  filename: string,
+  folder: string = "uploads",
+  mimetype: string = "application/octet-stream",
 ): Promise<string | null> {
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dxulshldj";
-  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "sakcat";
-
   try {
-    const formData = new FormData();
-    
-    if (Buffer.isBuffer(fileData)) {
-      const blob = new Blob([fileData]);
-      formData.append("file", blob, "file");
-    } else {
-      formData.append("file", fileData);
-    }
-    
-    formData.append("upload_preset", uploadPreset);
-    formData.append("folder", folder);
+    const client = await clientPromise;
+    const db = client.db("sakcat_db");
+    const fileId = uuidv4();
 
-    console.log(`☁️ Uploading to Cloudinary (auto) in folder: ${folder}...`);
-
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
-      method: "POST",
-      body: formData,
+    await db.collection("files").insertOne({
+      _id: fileId,
+      filename,
+      folder,
+      mimetype,
+      size: fileData.length,
+      data: new Binary(fileData),
+      uploadedAt: new Date(),
+      url: `/api/files/${fileId}`,
     });
 
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`Cloudinary responded with ${res.status}: ${errText}`);
-    }
-
-    const data = await res.json();
-    console.log("✅ Cloudinary upload successful:", data.secure_url);
-    return data.secure_url || null;
+    console.log(`💾 File uploaded to MongoDB: ${filename} (ID: ${fileId})`);
+    return `/api/files/${fileId}`;
   } catch (error) {
-    console.error("❌ uploadToCloudinary Error:", error);
+    console.error("❌ uploadToMongoDB Error:", error);
     return null;
   }
 }
 
 /**
- * saveFileLocally: บันทึกไฟล์ลงบน Disk ของเครื่อง Server (หรือ Cloudinary)
- * @param data ข้อมูลไฟล์ (Buffer หรือ Base64 string)
- * @param folder ชื่อโฟลเดอร์ย่อยใน public
- * @param filenamePrefix คำนำหน้าชื่อไฟล์
+ * uploadToCloudinary: อัปโหลดไฟล์ไปยัง Cloudinary ผ่าน REST API (ใช้สำหรับ compatibility เท่านั้น)
+ * @deprecated ใช้ uploadToMongoDB แทน
  */
-export async function saveFileLocally(
-  data: string | Buffer,
+export async function uploadToCloudinary(
+  fileData: string | Buffer,
   folder: string = "uploads",
-  filenamePrefix: string = "file"
 ): Promise<string | null> {
-  try {
-    // อัปโหลดขึ้น Cloudinary เท่านั้น (ไม่มีการเขียนไฟล์ลง Disk ท้องถิ่นของ Server)
-    const cloudinaryUrl = await uploadToCloudinary(data, folder);
-    if (cloudinaryUrl) {
-      return cloudinaryUrl;
-    }
-    throw new Error("Cloudinary upload failed and local fallback is disabled.");
-  } catch (error) {
-    console.error("❌ saveFileLocally Error:", error);
-    return null;
-  }
+  console.warn("⚠️ uploadToCloudinary is deprecated. Using MongoDB storage instead.");
+  const buffer = typeof fileData === "string" ? Buffer.from(fileData) : fileData;
+  return uploadToMongoDB(buffer, `file-${Date.now()}`, folder);
 }
-

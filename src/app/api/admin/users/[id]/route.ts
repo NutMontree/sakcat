@@ -3,12 +3,9 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
-import { saveFileLocally } from "@/lib/upload-server";
+import { uploadToMongoDB } from "@/lib/upload-server";
 
-export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
     const userRole = (session?.user as any)?.role?.toLowerCase();
@@ -30,25 +27,16 @@ export async function GET(
       projection.passwordText = 0;
     }
 
-    const user = await db
-      .collection("users")
-      .findOne({ _id: new ObjectId(id) }, { projection });
+    const user = await db.collection("users").findOne({ _id: new ObjectId(id) }, { projection });
 
-    if (!user)
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
     return NextResponse.json(user);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
     const userRole = (session?.user as any)?.role?.toLowerCase();
@@ -66,18 +54,14 @@ export async function PATCH(
 
     const { id } = await params;
     const body = await req.json();
-    const {
-      password,
-      username,
-      ...updateData
-    } = body;
+    const { password, username, ...updateData } = body;
 
     // ✅ ตรวจสอบความเป็นสากลของ Username (ป้องกันการซ้ำ)
     if (username) {
       const trimmedUsername = username.trim();
-      const existingUser = await db.collection("users").findOne({ 
+      const existingUser = await db.collection("users").findOne({
         username: { $regex: new RegExp(`^${trimmedUsername}$`, "i") },
-        _id: { $ne: new ObjectId(id) } 
+        _id: { $ne: new ObjectId(id) },
       });
       if (existingUser) {
         return NextResponse.json({ error: "ชื่อผู้ใช้งานนี้ถูกใช้ไปแล้ว" }, { status: 400 });
@@ -88,20 +72,31 @@ export async function PATCH(
     // เตรียมข้อมูลสำหรับอัปเดต
     const updatePayload: any = { ...updateData, updatedAt: new Date() };
 
-    // ✅ Manage Profile Image (Local)
+    // ✅ Manage Profile Image (MongoDB)
     if (updateData.image && updateData.image.startsWith("data:image")) {
-      const imageUrl = await saveFileLocally(updateData.image, "user_profiles", "profile");
+      const base64Data = updateData.image.split(",")[1];
+      const buffer = Buffer.from(base64Data, "base64");
+      const imageUrl = await uploadToMongoDB(
+        buffer,
+        `profile-${id}.jpg`,
+        "user_profiles",
+        "image/jpeg",
+      );
       if (imageUrl) {
         updatePayload.image = imageUrl;
       }
     }
 
-    // ✅ Manage Cover Image (Local)
-    if (
-      updateData.coverImage &&
-      updateData.coverImage.startsWith("data:image")
-    ) {
-      const coverUrl = await saveFileLocally(updateData.coverImage, "user_covers", "cover");
+    // ✅ Manage Cover Image (MongoDB)
+    if (updateData.coverImage && updateData.coverImage.startsWith("data:image")) {
+      const base64Data = updateData.coverImage.split(",")[1];
+      const buffer = Buffer.from(base64Data, "base64");
+      const coverUrl = await uploadToMongoDB(
+        buffer,
+        `cover-${id}.jpg`,
+        "user_covers",
+        "image/jpeg",
+      );
       if (coverUrl) {
         updatePayload.coverImage = coverUrl;
       }
@@ -130,7 +125,7 @@ export async function PATCH(
       .collection("users")
       .findOne({ _id: new ObjectId(id) }, { projection: { name: 1, username: 1 } });
     const targetName = targetUser?.name || targetUser?.username || id;
-    
+
     // Determine action description based on what was updated
     let actionDesc = `เเก้ไขข้อมูลผู้ใช้: ${targetName}`;
     if (updateData.role) actionDesc = `เปลี่ยนสิทธิ์ของ ${targetName} เป็น ${updateData.role}`;
@@ -147,7 +142,7 @@ export async function PATCH(
       targetId: new ObjectId(id),
       timestamp: new Date(),
       ip: req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1",
-      role: userRole
+      role: userRole,
     });
 
     return NextResponse.json({ success: true });
@@ -157,10 +152,7 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
     const userRole = (session?.user as any)?.role?.toLowerCase();
@@ -202,7 +194,7 @@ export async function DELETE(
       targetId: new ObjectId(id),
       timestamp: new Date(),
       ip: req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1",
-      role: userRole
+      role: userRole,
     });
 
     return NextResponse.json({ success: true });

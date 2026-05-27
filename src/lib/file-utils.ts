@@ -1,52 +1,71 @@
-import { unlink } from 'fs/promises';
-import { join } from 'path';
+import { unlink } from "fs/promises";
+import { join } from "path";
+import clientPromise from "./db";
 
 /**
- * file-utils.ts: ไฟล์ตัวช่วยสำหรับจัดการไฟล์บนระบบ (File System)
- * 
- * หน้าที่: 
- * - ลบไฟล์ออกจากโฟลเดอร์ public โดยอ้างอิงจาก URL ของไฟล์
+ * file-utils.ts: ไฟล์ตัวช่วยสำหรับจัดการไฟล์บนระบบ (File System + MongoDB)
+ *
+ * หน้าที่:
+ * - ลบไฟล์ออกจากระบบ (MongoDB หรือ Local Filesystem)
  * - ตรวจสอบความปลอดภัยเพื่อป้องกันการลบไฟล์นอกขอบเขตที่อนุญาต
  */
 
 /**
  * deleteFileFromUrl: ลบไฟล์ออกจากระบบโดยใช้ URL ที่ได้มาจาก API Media
- * 
- * รูปแบบ URL: /api/media/folder/subfolder/filename.ext
+ *
+ * รูปแบบ URL ที่รองรับ:
+ * - /api/files/[fileId] - ไฟล์จาก MongoDB
+ * - /api/media/folder/subfolder/filename.ext - ไฟล์จาก Local Filesystem (legacy)
  */
 export async function deleteFileFromUrl(url: string): Promise<boolean> {
-  // ตรวจสอบเบื้องต้นว่าเป็น URL ของไฟล์สื่อในระบบเราหรือไม่
-  if (!url || !url.startsWith('/api/media/')) {
+  if (!url) {
     return false;
   }
 
-  try {
-    // 1. แปลง URL เป็น Path จริงในเครื่อง Server
-    const relativePath = url.replace('/api/media/', '');
-    const parts = relativePath.split('/');
-    
-    const filePath = join(process.cwd(), 'public', ...parts);
-
-    // 2. ตรวจสอบความปลอดภัย (Security Check)
-    const allowedPrefix = join(process.cwd(), 'public').toLowerCase();
-    const normalizedPath = filePath.toLowerCase();
-    const isAllowed = normalizedPath.startsWith(allowedPrefix);
-
-    if (!isAllowed) {
-      console.warn(`Security warning: Attempted to delete file outside allowed directories: ${filePath}`);
+  // ✅ Delete from MongoDB
+  if (url.startsWith("/api/files/")) {
+    try {
+      const fileId = url.replace("/api/files/", "");
+      const client = await clientPromise;
+      const db = client.db("sakcat_db");
+      const result = await db.collection("files").deleteOne({ _id: fileId });
+      return result.deletedCount > 0;
+    } catch (error: any) {
+      console.error(`Error deleting file from MongoDB: ${url}`, error);
       return false;
     }
-
-    // 3. ทำการลบไฟล์จริงออกจาก Disk
-    await unlink(filePath);
-    return true;
-  } catch (error: any) {
-    if (error.code === 'ENOENT') {
-      // ถ้าหาไฟล์ไม่พบ (อาจจะถูกลบไปก่อนแล้ว) ให้ถือว่าสำเร็จ
-      return true;
-    }
-    console.error(`Error deleting file: ${url}`, error);
-    return false;
   }
-}
 
+  // ✅ Delete from Local Filesystem (legacy)
+  if (url.startsWith("/api/media/")) {
+    try {
+      const relativePath = url.replace("/api/media/", "");
+      const parts = relativePath.split("/");
+
+      const filePath = join(process.cwd(), "public", ...parts);
+
+      // Security Check
+      const allowedPrefix = join(process.cwd(), "public").toLowerCase();
+      const normalizedPath = filePath.toLowerCase();
+      const isAllowed = normalizedPath.startsWith(allowedPrefix);
+
+      if (!isAllowed) {
+        console.warn(
+          `Security warning: Attempted to delete file outside allowed directories: ${filePath}`,
+        );
+        return false;
+      }
+
+      await unlink(filePath);
+      return true;
+    } catch (error: any) {
+      if (error.code === "ENOENT") {
+        return true;
+      }
+      console.error(`Error deleting file: ${url}`, error);
+      return false;
+    }
+  }
+
+  return false;
+}

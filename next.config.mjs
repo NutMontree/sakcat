@@ -10,6 +10,14 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  env: {
+    // ✅ All sensitive data must be set in .env file
+    MONGODB_URI: process.env.MONGODB_URI,
+    NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+    AUTH_SECRET: process.env.AUTH_SECRET,
+  },
   async redirects() {
     return [
       {

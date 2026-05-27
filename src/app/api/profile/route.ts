@@ -3,7 +3,7 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { auth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
-import { saveFileLocally } from "@/lib/upload-server";
+import { uploadToMongoDB } from "@/lib/upload-server";
 import { deleteFileFromUrl } from "@/lib/file-utils";
 import { checkAndPromoteStudent } from "@/lib/student";
 
@@ -23,8 +23,7 @@ export async function GET() {
       { projection: { password: 0 } }, // ✅ ดีมากครับ ช่วยลด Data Payload
     );
 
-    if (!user)
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
     const promotedUser = await checkAndPromoteStudent(db, user);
 
@@ -47,11 +46,29 @@ export async function PATCH(req: Request) {
   try {
     const body = await req.json();
     console.log("Profile Update Request Body:", body);
-    const { name, username, email, phone, lineId, department, position, faction, description, password, image, coverImage, work, education, currentCity, hometown, relationship } = body;
+    const {
+      name,
+      username,
+      email,
+      phone,
+      lineId,
+      department,
+      position,
+      faction,
+      description,
+      password,
+      image,
+      coverImage,
+      work,
+      education,
+      currentCity,
+      hometown,
+      relationship,
+    } = body;
 
     const client = await clientPromise;
     const db = client.db("sakcat_db");
-    
+
     // Check if user is super_admin to allow username update
     const currentUser = await db.collection("users").findOne({ _id: new ObjectId(userId) });
     const isSuperAdmin = currentUser?.role === "super_admin";
@@ -62,12 +79,23 @@ export async function PATCH(req: Request) {
 
     // Only update fields that are present in the body
     const fields = [
-      'name', 'email', 'phone', 'lineId', 'department', 'position', 
-      'faction', 'description', 'work', 'education', 'currentCity', 
-      'hometown', 'relationship', 'program'
+      "name",
+      "email",
+      "phone",
+      "lineId",
+      "department",
+      "position",
+      "faction",
+      "description",
+      "work",
+      "education",
+      "currentCity",
+      "hometown",
+      "relationship",
+      "program",
     ];
 
-    fields.forEach(field => {
+    fields.forEach((field) => {
       if (body[field] !== undefined) {
         updateData[field] = body[field];
       }
@@ -77,9 +105,9 @@ export async function PATCH(req: Request) {
 
     if (isSuperAdmin && username) {
       const trimmedUsername = username.trim();
-      const existingUser = await db.collection("users").findOne({ 
+      const existingUser = await db.collection("users").findOne({
         username: { $regex: new RegExp(`^${trimmedUsername}$`, "i") },
-        _id: { $ne: new ObjectId(userId) } 
+        _id: { $ne: new ObjectId(userId) },
       });
       if (!existingUser) {
         updateData.username = trimmedUsername;
@@ -90,7 +118,14 @@ export async function PATCH(req: Request) {
 
     // ✅ 1. Manage Profile Image
     if (image && image.startsWith("data:image")) {
-      const imageUrl = await saveFileLocally(image, "user_profiles", "profile");
+      const base64Data = image.split(",")[1];
+      const buffer = Buffer.from(base64Data, "base64");
+      const imageUrl = await uploadToMongoDB(
+        buffer,
+        `profile-${userId}.jpg`,
+        "user_profiles",
+        "image/jpeg",
+      );
       if (imageUrl) {
         // ลบรูปเดิมถ้ามี
         if (currentUser?.image) {
@@ -103,7 +138,14 @@ export async function PATCH(req: Request) {
 
     // ✅ 2. Manage Cover Image
     if (coverImage && coverImage.startsWith("data:image")) {
-      const coverUrl = await saveFileLocally(coverImage, "user_covers", "cover");
+      const base64Data = coverImage.split(",")[1];
+      const buffer = Buffer.from(base64Data, "base64");
+      const coverUrl = await uploadToMongoDB(
+        buffer,
+        `cover-${userId}.jpg`,
+        "user_covers",
+        "image/jpeg",
+      );
       if (coverUrl) {
         // ลบรูปเดิมถ้ามี
         if (currentUser?.coverImage) {
@@ -123,15 +165,13 @@ export async function PATCH(req: Request) {
     }
 
     // ✅ 4. Update the user record
-    await db
-      .collection("users")
-      .updateOne({ _id: new ObjectId(userId) }, { $set: updateData });
+    await db.collection("users").updateOne({ _id: new ObjectId(userId) }, { $set: updateData });
 
     // ✅ 5. Record Activity Log
     try {
       await db.collection("logs").insertOne({
         userId: new ObjectId(userId),
-        userName: name || sessionUserName || "User", 
+        userName: name || sessionUserName || "User",
         action: "UPDATE_PROFILE",
         details: logDetail,
         timestamp: new Date(),
