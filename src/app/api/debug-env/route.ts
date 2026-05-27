@@ -13,6 +13,7 @@ export async function GET() {
         : null,
       node_env: process.env.NODE_ENV,
       vercel_env: process.env.VERCEL_ENV || "not-vercel",
+      next_public_api_url: process.env.NEXT_PUBLIC_API_URL || null,
     },
     dns_check: {},
     connection_test: {}
