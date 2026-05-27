@@ -71,6 +71,28 @@ async function createIndexes(promise: Promise<MongoClient>) {
   }
 }
 
+// การจัดการชื่อฐานข้อมูล (Dynamic Database Resolution)
+function getDbName(uri: string): string {
+  if (process.env.MONGODB_DB) {
+    return process.env.MONGODB_DB;
+  }
+  try {
+    const connectionStringWithoutProtocol = uri.replace(/^mongodb(\+srv)?:\/\//, "");
+    const slashIndex = connectionStringWithoutProtocol.indexOf("/");
+    if (slashIndex !== -1) {
+      const pathAndQuery = connectionStringWithoutProtocol.substring(slashIndex + 1);
+      const queryIndex = pathAndQuery.indexOf("?");
+      const dbName = queryIndex !== -1 ? pathAndQuery.substring(0, queryIndex) : pathAndQuery;
+      if (dbName) {
+        return dbName;
+      }
+    }
+  } catch (error) {
+    console.error("❌ [MongoDB] Error parsing DB name from MONGODB_URI:", error);
+  }
+  return "sakcat_db"; // ค่าเริ่มต้น fallback
+}
+
 // การจัดการ Singleton Connection (เพื่อให้มี Connection เดียวทั้งแอป)
 const globalWithMongo = global as typeof globalThis & {
   _mongoClientPromise?: Promise<MongoClient>;
@@ -79,6 +101,19 @@ const globalWithMongo = global as typeof globalThis & {
 if (!globalWithMongo._mongoClientPromise) {
   console.log("🔌 [MongoDB] Initializing new connection...");
   client = new MongoClient(uri, options);
+
+  // Override client.db เพื่อให้ชี้ไปยัง Database ที่ระบุใน URI หรือ Env โดยไม่ต้องแก้ไขโค้ด 200 กว่าไฟล์
+  const originalDb = client.db.bind(client);
+  const targetDb = getDbName(uri);
+  console.log(`🔌 [MongoDB] Redirecting all "sakcat_db" database calls to target: "${targetDb}"`);
+  
+  client.db = function (dbName?: string, options?: any) {
+    if (!dbName || dbName === "sakcat_db") {
+      return originalDb(targetDb, options);
+    }
+    return originalDb(dbName, options);
+  };
+
   globalWithMongo._mongoClientPromise = client
     .connect()
     .then((connectedClient) => {
