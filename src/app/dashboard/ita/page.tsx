@@ -986,7 +986,7 @@ export default function ItaDashboard() {
                       <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] block">
                         ลิงก์เอกสาร หรือลิงก์เว็บไซต์อ้างอิง (Attachment Links)
                       </label>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-end gap-2">
                         <input
                           type="file"
                           ref={fileInputRef}
@@ -994,7 +994,7 @@ export default function ItaDashboard() {
                           accept="application/pdf,image/*"
                           className="hidden"
                         />
-                        <button
+                        {/* <button
                           type="button"
                           onClick={handleTriggerUpload}
                           disabled={isUploading}
@@ -1010,7 +1010,7 @@ export default function ItaDashboard() {
                               <Upload size={12} /> อัปโหลดไฟล์ PDF / รูปภาพ
                             </>
                           )}
-                        </button>
+                        </button> */}
                         <button
                           type="button"
                           onClick={handleAddLink}
