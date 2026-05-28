@@ -16,10 +16,14 @@ export async function GET(req: Request) {
     const client = await clientPromise;
     const db = client.db("sakcat_db");
 
-    // ดึงข้อมูล OIT ทั้งหมดของปีที่เลือก
+    // Create index if not exists for better query performance
+    await db.collection("ita_items").createIndex({ year: 1, oitCode: 1 }, { unique: true });
+
+    // ดึงข้อมูล OIT ทั้งหมดของปีที่เลือก with projection to reduce data transfer
     const items = await db
       .collection("ita_items")
       .find({ year: year })
+      .project({ _id: 0, year: 1, oitCode: 1, title: 1, description: 1, links: 1, updatedAt: 1 })
       .toArray();
 
     return NextResponse.json(items);
@@ -73,7 +77,7 @@ export async function POST(req: Request) {
           updatedBy: session?.user?.name || (session?.user as any)?.username || "Guest User",
         },
       },
-      { upsert: true }
+      { upsert: true, writeConcern: { w: 1, j: false } } // Faster writes without journaling
     );
 
     return NextResponse.json({

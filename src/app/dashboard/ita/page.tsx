@@ -1,9 +1,15 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useSession as useNextAuthSession } from "next-auth/react";
-import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
+
+// Lazy load DashboardHeader for better performance
+const DashboardHeader = dynamic(() => import("@/components/dashboard/DashboardHeader"), {
+  loading: () => <div className="h-16 animate-pulse bg-zinc-100 dark:bg-zinc-800 rounded-lg" />,
+  ssr: false
+});
 import {
   Plus,
   Trash2,
@@ -505,11 +511,11 @@ export default function ItaDashboard() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
-  const handleTriggerUpload = () => {
+  const handleTriggerUpload = useCallback(() => {
     fileInputRef.current?.click();
-  };
+  }, []);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -543,7 +549,7 @@ export default function ItaDashboard() {
         fileInputRef.current.value = "";
       }
     }
-  };
+  }, [links]);
 
   // System states
   const [dbItems, setDbItems] = useState<any[]>([]);
@@ -604,25 +610,25 @@ export default function ItaDashboard() {
   };
 
   // Update form fields when active OIT selection changes
-  const handleOitChange = (code: string) => {
+  const handleOitChange = useCallback((code: string) => {
     setSelectedOit(code);
     updateFormFields(code, dbItems);
     setMessage(null);
-  };
+  }, [dbItems]);
 
   // Add a new link input field
-  const handleAddLink = () => {
+  const handleAddLink = useCallback(() => {
     const nextIndex = links.length + 1;
     setLinks([...links, { name: `${nextIndex}. ลิงก์ข้อมูลเพิ่มเติม`, url: "" }]);
-  };
+  }, [links]);
 
   // Remove a specific link
-  const handleRemoveLink = (index: number) => {
+  const handleRemoveLink = useCallback((index: number) => {
     setLinks(links.filter((_, idx) => idx !== index));
-  };
+  }, [links]);
 
   // Update specific link attribute
-  const handleLinkChange = (index: number, field: "name" | "url", val: string) => {
+  const handleLinkChange = useCallback((index: number, field: "name" | "url", val: string) => {
     const updated = links.map((link, idx) => {
       if (idx === index) {
         return { ...link, [field]: val };
@@ -630,10 +636,10 @@ export default function ItaDashboard() {
       return link;
     });
     setLinks(updated);
-  };
+  }, [links]);
 
   // Submit form data
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
       setMessage({ type: "error", text: "กรุณาระบุชื่อหัวข้อ OIT" });
@@ -676,10 +682,10 @@ export default function ItaDashboard() {
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [title, links, selectedYear, selectedOit, description]);
 
   // Clear/delete all data for the active OIT code physically from DB
-  const handleClearData = async () => {
+  const handleClearData = useCallback(async () => {
     if (
       !window.confirm(
         `คุณแน่ใจหรือไม่ที่จะลบ/ล้างข้อมูลทั้งหมดของหัวข้อ ${selectedOit}? การดำเนินการนี้จะเช็ดล้างข้อมูลออกทั้งหมด`,
@@ -726,7 +732,7 @@ export default function ItaDashboard() {
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [selectedYear, selectedOit, oitIndicators]);
 
   // Auth checking
   if (status === "loading") {
