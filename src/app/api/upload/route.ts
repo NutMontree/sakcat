@@ -75,25 +75,12 @@ async function uploadToCloudinary(
   try {
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dmez2x7ez";
     const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ktltc_preset";
-    const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || "238175287533225";
-    const apiSecret = process.env.CLOUDINARY_API_SECRET || "shzOF6QSd2y5xFxKMOwSEhRd73c";
 
-    // Generate timestamp and signature
-    const timestamp = Math.floor(Date.now() / 1000);
-    const paramsToSign = `folder=${folder}&timestamp=${timestamp}&upload_preset=${uploadPreset}`;
-    const signature = require('crypto')
-      .createHmac('sha1', apiSecret)
-      .update(paramsToSign)
-      .digest('hex');
-
-    // Prepare form data
+    // Prepare form data - use unsigned upload with preset
     const formData = new FormData();
     formData.append('file', new Blob([data as unknown as BlobPart]), filename);
     formData.append('upload_preset', uploadPreset);
     formData.append('folder', folder);
-    formData.append('timestamp', timestamp.toString());
-    formData.append('api_key', apiKey);
-    formData.append('signature', signature);
 
     // Upload to Cloudinary
     const response = await fetch(

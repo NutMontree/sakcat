@@ -47,9 +47,9 @@ export const metadata: Metadata = {
 
   // ไอคอนเว็บ (Favicon) ที่จะขึ้นบน Tab Browser
   icons: {
-    icon: "/images/favicon.ico",
-    shortcut: "/images/favicon.ico",
-    apple: "/images/logo.png", // ไอคอนสำหรับ iOS (Add to Home Screen)
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/logo.png", // ไอคอนสำหรับ iOS (Add to Home Screen)
   },
 
   // ข้อมูลสำหรับแสดงผลเมื่อแชร์ลิงก์ลง Facebook, LINE, Twitter
