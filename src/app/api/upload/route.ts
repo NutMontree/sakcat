@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { uploadToMongoDB } from "@/lib/upload-server";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +18,7 @@ export async function POST(req: Request) {
     const fileSize = (file as any).size || 0;
     const fileType = file.type || "application/octet-stream";
 
-    // Folder sanitization: reject attempts to traverse out of public folder
+    // Folder sanitization
     const rawFolder = folder || "uploads";
     if (typeof rawFolder !== "string" || rawFolder.includes("..") || rawFolder.startsWith("/")) {
       return NextResponse.json({ success: false, message: "Invalid folder" }, { status: 400 });
@@ -36,27 +35,24 @@ export async function POST(req: Request) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Upload to MongoDB
+    // Upload to Cloudinary
     try {
-      const mongoUrl = await uploadToMongoDB(buffer, file.name, sanitizedFolder, fileType);
-      if (mongoUrl) {
+      const cloudinaryUrl = await uploadToCloudinary(buffer, sanitizedFolder, file.name);
+      if (cloudinaryUrl) {
         return NextResponse.json({
           success: true,
-          secure_url: mongoUrl,
-          thumbnail_url: mongoUrl,
-          message: "File uploaded successfully to MongoDB",
+          secure_url: cloudinaryUrl,
+          thumbnail_url: cloudinaryUrl,
+          message: 'File uploaded successfully to Cloudinary'
         });
       }
-      throw new Error("MongoDB upload returned null URL.");
-    } catch (mongoErr: any) {
-      console.error("MongoDB upload failed:", mongoErr);
-      return NextResponse.json(
-        {
-          success: false,
-          message: `Upload failed: ${mongoErr?.message || String(mongoErr)}`,
-        },
-        { status: 500 },
-      );
+      throw new Error("Cloudinary upload returned null URL.");
+    } catch (cloudinaryErr: any) {
+      console.error("Cloudinary upload failed:", cloudinaryErr);
+      return NextResponse.json({ 
+        success: false, 
+        message: `Cloudinary upload failed: ${cloudinaryErr?.message || String(cloudinaryErr)}` 
+      }, { status: 500 });
     }
   } catch (error: any) {
     console.error("Upload error:", error);
@@ -68,5 +64,56 @@ export async function POST(req: Request) {
       },
       { status: 500 },
     );
+  }
+}
+
+async function uploadToCloudinary(
+  data: Buffer,
+  folder: string,
+  filename: string
+): Promise<string | null> {
+  try {
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dmez2x7ez";
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ktltc_preset";
+    const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || "238175287533225";
+    const apiSecret = process.env.CLOUDINARY_API_SECRET || "shzOF6QSd2y5xFxKMOwSEhRd73c";
+
+    // Generate timestamp and signature
+    const timestamp = Math.floor(Date.now() / 1000);
+    const paramsToSign = `folder=${folder}&timestamp=${timestamp}&upload_preset=${uploadPreset}`;
+    const signature = require('crypto')
+      .createHmac('sha1', apiSecret)
+      .update(paramsToSign)
+      .digest('hex');
+
+    // Prepare form data
+    const formData = new FormData();
+    formData.append('file', new Blob([data as unknown as BlobPart]), filename);
+    formData.append('upload_preset', uploadPreset);
+    formData.append('folder', folder);
+    formData.append('timestamp', timestamp.toString());
+    formData.append('api_key', apiKey);
+    formData.append('signature', signature);
+
+    // Upload to Cloudinary
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      {
+        method: 'POST',
+        body: formData,
+      }
+    );
+
+    const result = await response.json();
+    
+    if (result.secure_url) {
+      console.log(`✅ File uploaded to Cloudinary: ${filename}`);
+      return result.secure_url;
+    }
+    
+    throw new Error(result.error?.message || 'Cloudinary upload failed');
+  } catch (error) {
+    console.error("❌ Cloudinary upload error:", error);
+    return null;
   }
 }

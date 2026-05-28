@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useSession as useNextAuthSession } from "next-auth/react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { motion, AnimatePresence } from "framer-motion";
@@ -749,13 +749,7 @@ export default function ItaDashboard() {
 
   return (
     <div className="relative min-h-screen bg-transparent transition-colors duration-500 overflow-hidden">
-      <div className="flex items-center justify-center gap-4 p-4">
-        <Link href="/ITA" >
-          <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-zinc-800 text-slate-500 hover:text-orange-500 hover:border-orange-500/30 rounded-xl text-xs font-bold transition-all cursor-pointer">
-            หน้าแสดงผล ITA
-          </button>
-        </Link>
-      </div>
+ 
       {/* Background Mesh Gradients */}
       <div className="fixed inset-0 z-[-1] pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-orange-500/10 blur-[120px] dark:bg-orange-600/10" />

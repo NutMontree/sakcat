@@ -12,11 +12,15 @@ const withPWA = withPWAInit({
 const nextConfig = {
   env: {
     // ✅ All sensitive data must be set in .env file
-    MONGODB_URI: process.env.MONGODB_URI,
-    NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
-    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
-    AUTH_SECRET: process.env.AUTH_SECRET,
+    MONGODB_URI: process.env.MONGODB_URI || "mongodb+srv://sakcat_db_user:sakcat2569@sakcat.w5bs9vf.mongodb.net/sskcat?retryWrites=true&w=majority",
+    NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dmez2x7ez",
+    NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ktltc_preset",
+    NEXT_PUBLIC_CLOUDINARY_API_KEY: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || "238175287533225",
+    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET || "shzOF6QSd2y5xFxKMOwSEhRd73c",
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY || "238175287533225",
+    AUTH_SECRET: process.env.AUTH_SECRET || "ktltc_secret_key_change_in_production_123456789",
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || "ktltc_secret_key_change_in_production_123456789",
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL || "https://sskcat.vercel.app",
   },
   async redirects() {
     return [

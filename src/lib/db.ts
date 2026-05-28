@@ -29,6 +29,7 @@ console.log(`🔌 [MongoDB] Target: ${sanitizedUri}`);
 const options = {
   connectTimeoutMS: 30000, // กำหนดเวลารอการเชื่อมต่อสูงสุด 30 วินาที
   serverSelectionTimeoutMS: 30000,
+  tlsAllowInvalidCertificates: true, // อนุญาตให้ใช้ SSL certificate ที่ไม่ถูกต้องสำหรับ development
 };
 
 let client: MongoClient;
