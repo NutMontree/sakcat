@@ -129,13 +129,13 @@ const ExternalQualityAssurance = () => {
           >
             <Link href="/ITA" className="group block h-full relative">
               {/* Back Card Glow effect */}
-              <div className="absolute inset-0 bg-linear-to-br from-cyan-500/20 to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 rounded-3xl" />
+              <div className="absolute inset-0 bg-linear-to-br from-orange-500/20 to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 rounded-3xl" />
 
-              <article className="relative h-full flex flex-col justify-between rounded-3xl border border-slate-200/80 bg-white/70 backdrop-blur-md p-8 md:p-10 shadow-sm transition-all duration-300 group-hover:-translate-y-2 group-hover:border-cyan-400/40 group-hover:shadow-xl group-hover:shadow-cyan-500/5 dark:border-zinc-800/80 dark:bg-zinc-900/60 dark:group-hover:border-cyan-500/40">
+              <article className="relative h-full flex flex-col justify-between rounded-3xl border border-slate-200/80 bg-white/70 backdrop-blur-md p-8 md:p-10 shadow-sm transition-all duration-300 group-hover:-translate-y-2 group-hover:border-orange-400/40 group-hover:shadow-xl group-hover:shadow-orange-500/5 dark:border-zinc-800/80 dark:bg-zinc-900/60 dark:group-hover:border-orange-500/40">
                 <div>
                   {/* Top Badge & Date */}
                   <div className="flex items-center justify-between mb-6">
-                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-cyan-50 dark:bg-cyan-950/50 text-cyan-600 dark:text-cyan-400 text-[10px] font-bold border border-cyan-100/30 dark:border-cyan-900/20">
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-md bg-orange-50 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400 text-[10px] font-bold border border-orange-100/30 dark:border-orange-900/20">
                       ระบบประเมินคุณธรรม OIT
                     </span>
                     <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">
@@ -143,25 +143,8 @@ const ExternalQualityAssurance = () => {
                     </span>
                   </div>
 
-                  {/* Logo Container */}
-                  <div className="relative mb-6 inline-block">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-slate-50 dark:bg-zinc-800 border border-slate-100 dark:border-zinc-700/60 p-2.5 transition-transform duration-500 group-hover:scale-105 shadow-inner">
-                      <Image
-                        src="/images/ITALogo.webp"
-                        className="h-full w-full object-contain"
-                        alt="Logo ITA"
-                        width={60}
-                        height={60}
-                      />
-                    </div>
-                    {/* Small Corner Badge */}
-                    <div className="absolute -right-2 -bottom-2 flex h-7 w-7 items-center justify-center rounded-full bg-cyan-600 text-white shadow-md border border-white dark:border-zinc-900 dark:bg-cyan-500">
-                      <SafetyCertificateOutlined className="text-xs" />
-                    </div>
-                  </div>
-
                   {/* Title & Body */}
-                  <h3 className="mb-3 text-xl font-bold text-slate-800 dark:text-white transition-colors group-hover:text-cyan-600 dark:group-hover:text-cyan-400">
+                  <h3 className="mb-3 text-xl font-bold text-slate-800 dark:text-white transition-colors group-hover:text-orange-600 dark:group-hover:text-orange-400">
                     การประเมินคุณธรรม (ITA)
                   </h3>
 
@@ -173,11 +156,8 @@ const ExternalQualityAssurance = () => {
 
                 {/* Footer Link Button */}
                 <div className="pt-4 border-t border-slate-100 dark:border-zinc-800/80 flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-400 group-hover:text-cyan-500 transition-colors">
-                    Format: Interactive Portal
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 transition-transform duration-300 group-hover:translate-x-1">
-                    เข้าสู่เว็บไซต์ OIT Portal <ArrowRightOutlined className="text-[10px]" />
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-orange-600 dark:text-orange-400 transition-transform duration-300 group-hover:translate-x-1">
+                    เข้าสู่เว็บไซต์ OIT <ArrowRightOutlined className="text-[10px]" />
                   </span>
                 </div>
               </article>

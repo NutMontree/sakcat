@@ -20,7 +20,7 @@ import {
   ChevronRight,
   ArrowRight,
   LogOut,
-  AlertTriangle
+  AlertTriangle,
 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import imageCompression from "browser-image-compression";
@@ -38,7 +38,7 @@ type FaceStatus =
   | "not_matched"
   | "error";
 
-export default function StudentFlagpolePortal() {
+export default function StudentFlagpole() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const user = session?.user;
@@ -51,7 +51,7 @@ export default function StudentFlagpolePortal() {
     image: null,
     studentId: "",
     academicLevel: "",
-    role: "student"
+    role: "student",
   });
 
   const [history, setHistory] = useState<any[]>([]);
@@ -63,7 +63,9 @@ export default function StudentFlagpolePortal() {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
-  const [locationStatus, setLocationStatus] = useState<"idle" | "searching" | "found" | "error">("idle");
+  const [locationStatus, setLocationStatus] = useState<"idle" | "searching" | "found" | "error">(
+    "idle",
+  );
   const [locationError, setLocationError] = useState("");
   const [faceStatus, setFaceStatus] = useState<FaceStatus>("idle");
   const [faceMsg, setFaceMsg] = useState("");
@@ -100,7 +102,7 @@ export default function StudentFlagpolePortal() {
           image: data.image || null,
           studentId: data.studentId || "ไม่พบรหัสประจำตัว",
           academicLevel: data.academicLevel || "ระดับชั้นเรียน",
-          role: data.role || "student"
+          role: data.role || "student",
         });
       }
 
@@ -112,12 +114,12 @@ export default function StudentFlagpolePortal() {
         setHistory(records);
 
         // Analyze if today check-in is complete
-        const thNow = new Date(new Date().getTime() + (7 * 60 * 60 * 1000));
+        const thNow = new Date(new Date().getTime() + 7 * 60 * 60 * 1000);
         const todayStr = format(thNow, "yyyy-MM-dd");
 
         const foundToday = records.find((rec: any) => {
           const recDate = new Date(rec.date);
-          const recDateTh = new Date(recDate.getTime() + (7 * 60 * 60 * 1000));
+          const recDateTh = new Date(recDate.getTime() + 7 * 60 * 60 * 1000);
           return format(recDateTh, "yyyy-MM-dd") === todayStr;
         });
 
@@ -137,7 +139,7 @@ export default function StudentFlagpolePortal() {
         console.error("Failed to load flagpole settings", errConfig);
       }
     } catch (err) {
-      console.error("Failed to load student portal data", err);
+      console.error("Failed to load student  data", err);
     } finally {
       setLoadingHistory(false);
       setCheckingToday(false);
@@ -180,13 +182,11 @@ export default function StudentFlagpolePortal() {
         locked = true;
         msg = "วันนี้เป็นวันหยุดทำกิจกรรม ไม่ต้องเช็คชื่อเข้าแถวหน้าเสาธง";
         canAction = false;
-      }
-      else if (val < flagStart) {
+      } else if (val < flagStart) {
         locked = true;
         msg = `ยังไม่ถึงเวลากิจกรรมเช็คชื่อเข้าแถว (ระบบเปิดเช็คชื่อเวลา ${flagpoleConfig.checkInStart || "07:00"} น.)`;
         canAction = false;
-      }
-      else if (val > flagClose) {
+      } else if (val > flagClose) {
         locked = true;
         msg = `หมดช่วงเวลาเช็คชื่อเข้าแถวหน้าเสาธงแล้ว (ระบบปิดให้บริการเมื่อเวลา ${flagpoleConfig.checkInEnd || "08:45"} น.)`;
         canAction = false;
@@ -261,12 +261,18 @@ export default function StudentFlagpolePortal() {
       try {
         const faceApi = faceApiRef.current;
         const detection = await faceApi
-          .detectSingleFace(videoRef.current, new faceApi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
+          .detectSingleFace(
+            videoRef.current,
+            new faceApi.SsdMobilenetv1Options({ minConfidence: 0.5 }),
+          )
           .withFaceLandmarks()
           .withFaceDescriptor();
 
         if (detection) {
-          const distance = faceApi.euclideanDistance(profileDescriptorRef.current, detection.descriptor);
+          const distance = faceApi.euclideanDistance(
+            profileDescriptorRef.current,
+            detection.descriptor,
+          );
           if (distance <= 0.5) {
             setFaceStatus("matched");
             setFaceMsg(`✅ ยืนยันใบหน้านักศึกษาสำเร็จ (${Math.round((1 - distance) * 100)}%)`);
@@ -302,11 +308,12 @@ export default function StudentFlagpolePortal() {
         console.error("GPS Error:", err);
         setLocationStatus("error");
         if (err.code === 1)
-          setLocationError("กรุณาเปิดสิทธิ์ระบุตำแหน่ง (Location Access) ในเมนูของอุปกรณ์เบราว์เซอร์");
-        else
-          setLocationError("ไม่พบพิกัดตำแหน่งสแกน ลองออกมานอกที่ร่ม/อาคารเรียน");
+          setLocationError(
+            "กรุณาเปิดสิทธิ์ระบุตำแหน่ง (Location Access) ในเมนูของอุปกรณ์เบราว์เซอร์",
+          );
+        else setLocationError("ไม่พบพิกัดตำแหน่งสแกน ลองออกมานอกที่ร่ม/อาคารเรียน");
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
     );
   };
 
@@ -320,7 +327,7 @@ export default function StudentFlagpolePortal() {
             video: { facingMode: "user", width: 640, height: 480 },
           });
           videoRef.current.srcObject = stream;
-          await videoRef.current.play().catch(e => console.error(e));
+          await videoRef.current.play().catch((e) => console.error(e));
           loadFaceApiAndProfile();
           getLocation(true);
         } catch (err: any) {
@@ -334,7 +341,7 @@ export default function StudentFlagpolePortal() {
     if (isCameraOpen) startCamera();
 
     return () => {
-      if (stream) stream.getTracks().forEach(t => t.stop());
+      if (stream) stream.getTracks().forEach((t) => t.stop());
     };
   }, [isCameraOpen]);
 
@@ -355,10 +362,15 @@ export default function StudentFlagpolePortal() {
         const ctx = canvas.getContext("2d");
         if (ctx) {
           ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-          const blob = await new Promise<Blob | null>(res => canvas.toBlob(res, "image/jpeg", 0.85));
+          const blob = await new Promise<Blob | null>((res) =>
+            canvas.toBlob(res, "image/jpeg", 0.85),
+          );
           if (blob) {
             const file = new File([blob], "student-flagpole.jpg", { type: "image/jpeg" });
-            const compressed = await imageCompression(file, { maxSizeMB: 0.1, maxWidthOrHeight: 800 });
+            const compressed = await imageCompression(file, {
+              maxSizeMB: 0.1,
+              maxWidthOrHeight: 800,
+            });
             const uploadRes = await uploadFile(compressed, "attendance_photos");
             if (uploadRes?.secure_url) photoUrl = uploadRes.secure_url;
           }
@@ -410,11 +422,20 @@ export default function StudentFlagpolePortal() {
     switch (faceStatus) {
       case "loading_models":
       case "loading_profile":
-        return { icon: <Loader2 className="animate-spin" />, color: "bg-slate-100 text-slate-600 border-slate-200" };
+        return {
+          icon: <Loader2 className="animate-spin" />,
+          color: "bg-slate-100 text-slate-600 border-slate-200",
+        };
       case "detecting":
-        return { icon: <Loader2 className="animate-spin" />, color: "bg-indigo-100 text-indigo-700 border-indigo-200 animate-pulse" };
+        return {
+          icon: <Loader2 className="animate-spin" />,
+          color: "bg-indigo-100 text-indigo-700 border-indigo-200 animate-pulse",
+        };
       case "matched":
-        return { icon: <ShieldCheck />, color: "bg-emerald-50 text-emerald-700 border-emerald-200" };
+        return {
+          icon: <ShieldCheck />,
+          color: "bg-emerald-50 text-emerald-700 border-emerald-200",
+        };
       case "not_matched":
         return { icon: <ShieldX />, color: "bg-rose-50 text-rose-700 border-rose-200" };
       default:
@@ -448,7 +469,11 @@ export default function StudentFlagpolePortal() {
             <div className="relative">
               <div className="w-16 h-16 rounded-3xl overflow-hidden border-2 border-indigo-100 dark:border-zinc-700 shadow-md flex items-center justify-center bg-indigo-50 dark:bg-zinc-800">
                 {profileData.image ? (
-                  <img src={profileData.image} alt={profileData.name} className="w-full h-full object-cover" />
+                  <img
+                    src={profileData.image}
+                    alt={profileData.name}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <User className="text-slate-400" size={28} />
                 )}
@@ -458,7 +483,10 @@ export default function StudentFlagpolePortal() {
               </div>
             </div>
             <div>
-              <h1 className="text-xl font-black text-slate-800 dark:text-white leading-none mb-2 truncate max-w-[200px]" title={profileData.name}>
+              <h1
+                className="text-xl font-black text-slate-800 dark:text-white leading-none mb-2 truncate max-w-[200px]"
+                title={profileData.name}
+              >
                 {profileData.name || "นักเรียน/นักศึกษา"}
               </h1>
               <div className="flex flex-wrap gap-2 items-center">
@@ -526,12 +554,20 @@ export default function StudentFlagpolePortal() {
                       <Clock size={20} />
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-1.5">
-                      {mounted ? time.toLocaleDateString("th-TH", { weekday: "short", day: "numeric", month: "short" }) : "LODING..."}
+                      {mounted
+                        ? time.toLocaleDateString("th-TH", {
+                            weekday: "short",
+                            day: "numeric",
+                            month: "short",
+                          })
+                        : "LODING..."}
                     </span>
                   </div>
 
                   <div className="text-5xl font-black tracking-tighter text-slate-800 dark:text-white font-mono flex items-baseline justify-start gap-1 select-none">
-                    {mounted ? time.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" }) : "--:--"}
+                    {mounted
+                      ? time.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })
+                      : "--:--"}
                     <span className="text-lg text-indigo-500 font-bold ml-1 animate-pulse">
                       {mounted ? time.getSeconds().toString().padStart(2, "0") : "--"}
                     </span>
@@ -563,18 +599,27 @@ export default function StudentFlagpolePortal() {
 
                     <div className="grid grid-cols-2 gap-4 w-full text-left bg-slate-50 dark:bg-zinc-950 p-4 rounded-3xl border border-slate-100 dark:border-zinc-850 font-mono">
                       <div>
-                        <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest block mb-0.5">Time Checked</span>
+                        <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest block mb-0.5">
+                          Time Checked
+                        </span>
                         <span className="text-base font-black text-slate-800 dark:text-zinc-100">
-                          {todayAttendance.checkIn?.time ? format(new Date(todayAttendance.checkIn.time), "HH:mm:ss") : "--:--"} น.
+                          {todayAttendance.checkIn?.time
+                            ? format(new Date(todayAttendance.checkIn.time), "HH:mm:ss")
+                            : "--:--"}{" "}
+                          น.
                         </span>
                       </div>
                       <div>
-                        <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest block mb-0.5">Status Badge</span>
-                        <span className={`text-xs font-black uppercase tracking-widest px-2 py-0.5 rounded-md border inline-block ${
-                          todayAttendance.status === "Present"
-                            ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-                            : "bg-amber-50 text-amber-600 border-amber-100"
-                        }`}>
+                        <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest block mb-0.5">
+                          Status Badge
+                        </span>
+                        <span
+                          className={`text-xs font-black uppercase tracking-widest px-2 py-0.5 rounded-md border inline-block ${
+                            todayAttendance.status === "Present"
+                              ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+                              : "bg-amber-50 text-amber-600 border-amber-100"
+                          }`}
+                        >
                           {todayAttendance.status === "Present" ? "มาตรงเวลา" : "สาย"}
                         </span>
                       </div>
@@ -590,7 +635,8 @@ export default function StudentFlagpolePortal() {
                       เช็คชื่อกิจกรรมเสาธง
                     </h3>
                     <p className="text-slate-400 text-xs font-bold leading-relaxed mb-6 max-w-[240px] mx-auto">
-                      โปรดสแกนใบหน้าและบันทึกตำแหน่ง GPS บริเวณหน้าเสาธงเพื่อลงทะเบียนเช็คชื่อเข้าร่วม
+                      โปรดสแกนใบหน้าและบันทึกตำแหน่ง GPS
+                      บริเวณหน้าเสาธงเพื่อลงทะเบียนเช็คชื่อเข้าร่วม
                     </p>
 
                     {timeState.isLocked ? (
@@ -598,9 +644,7 @@ export default function StudentFlagpolePortal() {
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-1.5 flex items-center justify-center gap-1.5">
                           <AlertCircle size={12} /> ระบบเข้าแถวเสาธงปิด
                         </p>
-                        <p className="text-xs font-bold leading-relaxed">
-                          {timeState.lockMsg}
-                        </p>
+                        <p className="text-xs font-bold leading-relaxed">{timeState.lockMsg}</p>
                       </div>
                     ) : (
                       <button
@@ -616,21 +660,30 @@ export default function StudentFlagpolePortal() {
                   /* Camera active check-in flow */
                   <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-4 shadow-xl border border-slate-100 dark:border-zinc-800 flex flex-col">
                     <div className="w-full aspect-square bg-slate-900 rounded-3xl overflow-hidden relative mb-4 shadow-inner border-2 border-slate-100 dark:border-zinc-800">
-                      <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover scale-x-[-1]" />
+                      <video
+                        ref={videoRef}
+                        autoPlay
+                        playsInline
+                        className="w-full h-full object-cover scale-x-[-1]"
+                      />
 
                       {/* Video Tags overlay */}
                       <div className="absolute top-3 left-3 right-3 flex flex-col gap-1.5 pointer-events-none">
                         {faceUI && (
-                          <div className={`flex items-center gap-1.5 px-3.5 py-1.5 border rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md ${faceUI.color}`}>
+                          <div
+                            className={`flex items-center gap-1.5 px-3.5 py-1.5 border rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md ${faceUI.color}`}
+                          >
                             {faceUI.icon}
                             <span>{faceMsg}</span>
                           </div>
                         )}
-                        <div className={`flex items-center gap-1.5 px-3.5 py-1.5 border rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md ${
-                          locationStatus === "found"
-                            ? "bg-green-50 text-green-700 border-green-200"
-                            : "bg-slate-50 text-slate-500 border-slate-200 animate-pulse"
-                        }`}>
+                        <div
+                          className={`flex items-center gap-1.5 px-3.5 py-1.5 border rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md ${
+                            locationStatus === "found"
+                              ? "bg-green-50 text-green-700 border-green-200"
+                              : "bg-slate-50 text-slate-500 border-slate-200 animate-pulse"
+                          }`}
+                        >
                           <MapPin size={12} />
                           <span>
                             {locationStatus === "searching" && "กำลังตรวจพิกัด GPS..."}
@@ -661,7 +714,11 @@ export default function StudentFlagpolePortal() {
                         onClick={submitCheckIn}
                         className="flex-2 py-3.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-1.5"
                       >
-                        {isProcessing ? <Loader2 className="animate-spin" size={14} /> : <span>ลงเวลาเข้าแถว 🇹🇭</span>}
+                        {isProcessing ? (
+                          <Loader2 className="animate-spin" size={14} />
+                        ) : (
+                          <span>ลงเวลาเข้าแถว 🇹🇭</span>
+                        )}
                       </button>
                     </div>
                   </div>
@@ -676,8 +733,11 @@ export default function StudentFlagpolePortal() {
                 className="w-full h-full flex flex-col space-y-4"
               >
                 {loadingHistory ? (
-                  [1, 2].map(i => (
-                    <div key={i} className="bg-white dark:bg-zinc-900 rounded-4xl p-4 border border-slate-100 dark:border-zinc-800 animate-pulse h-24 shadow-sm" />
+                  [1, 2].map((i) => (
+                    <div
+                      key={i}
+                      className="bg-white dark:bg-zinc-900 rounded-4xl p-4 border border-slate-100 dark:border-zinc-800 animate-pulse h-24 shadow-sm"
+                    />
                   ))
                 ) : history.length === 0 ? (
                   <div className="text-center py-16 bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-slate-100 dark:border-zinc-800 shadow-inner">
@@ -692,7 +752,9 @@ export default function StudentFlagpolePortal() {
                 ) : (
                   history.map((record, index) => {
                     const isLate = record.status === "Late";
-                    const dateVal = record.checkIn?.time ? new Date(record.checkIn.time) : new Date(record.date);
+                    const dateVal = record.checkIn?.time
+                      ? new Date(record.checkIn.time)
+                      : new Date(record.date);
                     return (
                       <motion.div
                         key={record._id || index}
@@ -716,11 +778,13 @@ export default function StudentFlagpolePortal() {
                               <h4 className="text-sm font-black text-slate-800 dark:text-white">
                                 {format(dateVal, "EEEE", { locale: th })}
                               </h4>
-                              <span className={`px-1.5 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border ${
-                                isLate
-                                  ? "bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-500/10 dark:text-amber-400"
-                                  : "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400"
-                              }`}>
+                              <span
+                                className={`px-1.5 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border ${
+                                  isLate
+                                    ? "bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-500/10 dark:text-amber-400"
+                                    : "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400"
+                                }`}
+                              >
                                 {isLate ? "สาย" : "ตรงเวลา"}
                               </span>
                             </div>
@@ -742,7 +806,11 @@ export default function StudentFlagpolePortal() {
                             rel="noopener noreferrer"
                             className="w-8 h-11 bg-slate-100 rounded-md overflow-hidden border border-slate-200 shadow-sm shrink-0 block hover:scale-105 transition-all"
                           >
-                            <img src={record.checkIn.photoUrl} alt="Scan" className="w-full h-full object-cover" />
+                            <img
+                              src={record.checkIn.photoUrl}
+                              alt="Scan"
+                              className="w-full h-full object-cover"
+                            />
                           </a>
                         )}
                       </motion.div>
@@ -756,7 +824,7 @@ export default function StudentFlagpolePortal() {
 
         <div className="pt-6 pb-2 text-center border-t border-slate-100 dark:border-zinc-900/40">
           <p className="text-[9px] text-slate-300 dark:text-zinc-700 font-black uppercase tracking-[0.3em] leading-loose">
-            Simplified Student Flagpole Portal <br />
+            Simplified Student Flagpole <br />
             KTL by AllMaster • Workplace Education
           </p>
         </div>

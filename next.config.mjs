@@ -147,10 +147,11 @@ const nextConfig = {
     return config;
   },
 
-  compress: true,
+  compress: false,
   devIndicators: {
     appIsrStatus: false,
   },
 };
 
-export default withPWA(nextConfig);
+// export default withPWA(nextConfig);
+export default nextConfig;

@@ -31,7 +31,7 @@ const CleanHeader = ({ selectedYear, years, setSelectedYear }: any) => {
           </div>
           <div>
             <h1 className="text-lg font-black text-slate-900 dark:text-white leading-tight">
-              ITA Online Portal
+              ITA Online
             </h1>
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
               วิทยาลัยเกษตรและเทคโนโลยีศรีสะเกษ
@@ -56,11 +56,11 @@ const CleanHeader = ({ selectedYear, years, setSelectedYear }: any) => {
               </button>
             ))}
           </div>
-          <Link href="/dashboard/ita">
+          {/* <Link href="/dashboard/ita">
             <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-zinc-800 text-slate-500 hover:text-orange-500 hover:border-orange-500/30 rounded-xl text-xs font-bold transition-all cursor-pointer">
               จัดการ ITA
             </button>
-          </Link>
+          </Link> */}
         </div>
       </div>
     </div>
@@ -897,7 +897,7 @@ export default function ITA() {
         {/* Main Title Section */}
         <div className="text-center mb-10">
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-400 text-xs font-bold border border-orange-100 dark:border-orange-900/40 mb-4">
-            <BookOutlined /> ITA Online Portal
+            <BookOutlined /> ITA Online
           </span>
           <h2 className="text-2xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight mb-2">
             ข้อมูลการประเมินคุณธรรมและความโปร่งใส (OIT)

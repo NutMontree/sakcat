@@ -203,11 +203,21 @@ export default function LeaveRequestPage() {
   };
 
   if (quotaLoading) {
-    return <FullPageLoader message="กำลังตรวจสอบสิทธิ์การลา..." subtitle="กรุณารอสักครู่ ระบบกำลังตรวจสอบโควตาการลาคงเหลือของคุณ" />;
+    return (
+      <FullPageLoader
+        message="กำลังตรวจสอบสิทธิ์การลา..."
+        subtitle="กรุณารอสักครู่ ระบบกำลังตรวจสอบโควตาการลาคงเหลือของคุณ"
+      />
+    );
   }
 
   if (loading) {
-    return <FullPageLoader message="กำลังส่งคำขอลาของคุณ..." subtitle="กำลังอัปโหลดเอกสารแนบและบันทึกข้อมูลคำแจ้งลา" />;
+    return (
+      <FullPageLoader
+        message="กำลังส่งคำขอลาของคุณ..."
+        subtitle="กำลังอัปโหลดเอกสารแนบและบันทึกข้อมูลคำแจ้งลา"
+      />
+    );
   }
 
   return (
@@ -240,10 +250,7 @@ export default function LeaveRequestPage() {
                 <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-zinc-500">
                   <span>ประเภทการลา</span>
                   <span className="text-slate-900 dark:text-white text-xs">
-                    {
-                      LEAVE_TYPES.find((t) => t.id === formData.leaveType)
-                        ?.label
-                    }
+                    {LEAVE_TYPES.find((t) => t.id === formData.leaveType)?.label}
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-zinc-500">
@@ -261,7 +268,7 @@ export default function LeaveRequestPage() {
               </div>
 
               <p className="text-slate-400 dark:text-zinc-500 font-bold mb-8 text-[11px] uppercase tracking-[0.4em] px-4">
-                Returning you to portal in 3s...
+                Returning you to in 3s...
               </p>
               <div className="w-full bg-emerald-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden shadow-inner">
                 <motion.div
@@ -281,10 +288,7 @@ export default function LeaveRequestPage() {
                 className="lg:col-span-4 space-y-8"
               >
                 <div className="space-y-6">
-                  <Link
-                    href="/wfh"
-                    className="group flex items-center gap-4 w-fit"
-                  >
+                  <Link href="/wfh" className="group flex items-center gap-4 w-fit">
                     <div className="p-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl text-slate-400 group-hover:text-blue-600 group-hover:border-blue-600/30 shadow-xl transition-all group-hover:-translate-x-1">
                       <ArrowLeft size={20} />
                     </div>
@@ -294,10 +298,7 @@ export default function LeaveRequestPage() {
                       แจ้ง <span className="text-blue-600">ลางาน</span>
                     </h1>
                     <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-black text-[10px] font-black uppercase tracking-[0.4em] shadow-2xl">
-                      <Zap
-                        size={14}
-                        className="text-yellow-400 fill-yellow-400"
-                      />
+                      <Zap size={14} className="text-yellow-400 fill-yellow-400" />
                       Management v3.0
                     </div>
                   </div>
@@ -311,8 +312,8 @@ export default function LeaveRequestPage() {
                     Verification Flow
                   </h3>
                   <p className="text-sm font-bold leading-relaxed relative z-10">
-                    ทุกการทำรายการจะผ่านการตรวจสอบแบบ Real-time
-                    โดยฝ่ายบริหารงานบุคคล เพื่อความถูกต้องและโปร่งใสของข้อมูล
+                    ทุกการทำรายการจะผ่านการตรวจสอบแบบ Real-time โดยฝ่ายบริหารงานบุคคล
+                    เพื่อความถูกต้องและโปร่งใสของข้อมูล
                   </p>
                 </div>
               </motion.div>
@@ -340,9 +341,7 @@ export default function LeaveRequestPage() {
                         <button
                           key={type.id}
                           type="button"
-                          onClick={() =>
-                            setFormData({ ...formData, leaveType: type.id })
-                          }
+                          onClick={() => setFormData({ ...formData, leaveType: type.id })}
                           className={`flex flex-col items-center justify-center p-6 rounded-3xl md:rounded-4xl border-2 transition-all gap-3 group relative overflow-hidden ${formData.leaveType === type.id ? `bg-slate-900 border-slate-900 text-white shadow-2xl -translate-y-1` : `bg-slate-50 dark:bg-zinc-950 border-transparent hover:border-slate-200 dark:hover:border-white/10 opacity-70 hover:opacity-100`}`}
                         >
                           <type.icon
@@ -428,10 +427,7 @@ export default function LeaveRequestPage() {
                           className="bg-slate-900 dark:bg-zinc-800 rounded-3xl md:rounded-[2.5rem] p-8 text-center relative overflow-hidden group"
                         >
                           <div className="absolute top-0 right-0 p-5 opacity-5 group-hover:scale-125 transition-transform">
-                            <Activity
-                              size={80}
-                              className="text-white dark:text-black"
-                            />
+                            <Activity size={80} className="text-white dark:text-black" />
                           </div>
                           <h4 className="text-6xl font-black text-white dark:text-black leading-none mb-1 font-mono tracking-tighter">
                             {requestedDays}
@@ -460,9 +456,7 @@ export default function LeaveRequestPage() {
                       </div>
                       <textarea
                         value={formData.reason}
-                        onChange={(e) =>
-                          setFormData({ ...formData, reason: e.target.value })
-                        }
+                        onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
                         rows={5}
                         className="w-full pl-16 pr-10 py-7 bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-white/5 rounded-3xl md:rounded-[2.5rem] focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-800 dark:text-white font-bold text-sm leading-relaxed resize-none shadow-inner placeholder:text-slate-300 dark:placeholder:text-zinc-800"
                         placeholder="ระบุเหตุผลการลาของคุณโดยสังเขป..."
@@ -503,9 +497,7 @@ export default function LeaveRequestPage() {
                           <div className="text-center">
                             <p className="text-[11px] font-black text-slate-800 dark:text-white uppercase tracking-widest">
                               Upload{" "}
-                              <span className="text-indigo-500 font-black">
-                                Digital Receipt
-                              </span>
+                              <span className="text-indigo-500 font-black">Digital Receipt</span>
                             </p>
                             <p className="text-[9px] text-slate-400 mt-1 font-bold uppercase tracking-[0.2em]">
                               MAX 5MB • IMAGE ONLY

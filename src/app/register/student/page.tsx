@@ -78,9 +78,9 @@ export default function StudentRegisterPage() {
         setTimeout(() => router.push("/login"), 2500);
       } else {
         setErrorMsg(
-          data.details 
-            ? `${data.error} (รายละเอียด: ${data.details})` 
-            : (data.error || "ไม่สามารถลงทะเบียนได้")
+          data.details
+            ? `${data.error} (รายละเอียด: ${data.details})`
+            : data.error || "ไม่สามารถลงทะเบียนได้",
         );
       }
     } catch (error) {
@@ -107,7 +107,7 @@ export default function StudentRegisterPage() {
             <div className="p-3 bg-white/10 rounded-xl backdrop-blur-md group-hover:bg-white/20 transition">
               <Command size={24} className="text-amber-400" />
             </div>
-            <span className="font-bold text-xl tracking-wide uppercase">SAKCAT Student Portal</span>
+            <span className="font-bold text-xl tracking-wide uppercase">SAKCAT Student </span>
           </Link>
         </div>
 
@@ -232,7 +232,7 @@ export default function StudentRegisterPage() {
                 </div>
                 <div className="flex-1">
                   <h4 className="text-sm font-black text-amber-600 dark:text-amber-400 mb-1 leading-none">
-                    ระบบบัญชีผู้ใช้เข้าเรียนแบบย่อ (Simplified Student Portal Login)
+                    ระบบบัญชีผู้ใช้เข้าเรียนแบบย่อ (Simplified Student Login)
                   </h4>
                   <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-bold leading-relaxed">
                     ระบบได้ยกเลิกช่องกรอก Username และรหัสผ่าน เพื่อป้องกันการสะกดผิดหรือลืมข้อมูล

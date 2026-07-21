@@ -30,6 +30,7 @@ export default async function middleware(req: NextRequest) {
 
 export const config = {
   // ทำงานทุกเส้นทางยกเว้น _next/static, _next/image, images, และ favicon.ico
-  matcher: ["/((?!_next/static|_next/image|images|favicon.ico).*)"],
+  // matcher: ["/((?!_next/static|_next/image|images|favicon.ico).*)"],
+  // ทำงานทุกเส้นทางยกเว้น _next/static, _next/image, images, favicon.ico, และ PWA files
+  matcher: ["/((?!_next/static|_next/image|images|favicon\\.ico|sw\\.js|manifest\\.webmanifest|workbox-.*).*)"],
 };
-

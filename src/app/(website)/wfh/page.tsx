@@ -277,7 +277,7 @@ export default function WFHHubPage() {
 
         <div className="pt-10 pb-6 text-center">
           <p className="text-[10px] text-slate-300 dark:text-zinc-700 font-black uppercase tracking-[0.4em]">
-            KTL by AllMaster • Workplace Portal
+            KTL by AllMaster • Workplace
           </p>
         </div>
       </div>

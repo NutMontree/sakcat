@@ -285,7 +285,7 @@ export default function StudentVerifyPage() {
             className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 text-blue-655 border border-blue-100 rounded-full text-xs font-black uppercase tracking-wider shadow-sm"
           >
             <Sparkles className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
-            <span>SAKCAT Central Directory Verification Portal</span>
+            <span>SAKCAT Central Directory Verification </span>
           </motion.div>
 
           <motion.h1
